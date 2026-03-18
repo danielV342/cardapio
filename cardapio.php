@@ -278,7 +278,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    <section id="Sashimis" class="mb-5">
+    <section id="sashimis" class="mb-5">
         <h2 class="category-title">Sashimis</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
@@ -299,7 +299,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-     <section id="Sushis e Niguiris" class="mb-5">
+     <section id="niguiris" class="mb-5">
         <h2 class="category-title">Sushis e Niguiris</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
@@ -320,7 +320,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    <section id="Rolls & Especiais" class="mb-5">
+    <section id="rolls" class="mb-5">
         <h2 class="category-title">Rolls & Especiais</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
@@ -341,7 +341,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    <section id="Experiência Wabi Sabi" class="mb-5">
+    <section id="wabiSabi" class="mb-5">
         <h2 class="category-title">Experiência Wabi Sabi</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
