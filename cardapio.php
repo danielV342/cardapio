@@ -152,6 +152,71 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background-color: #e63946;
             color: #fff;
         }
+        .cart-modal .modal-content {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+        }
+
+.cart-item {
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #e63946;
+    border-top: 2px solid #333;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.payment-method {
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.payment-method:hover {
+    border-color: #e63946;
+    background-color: rgba(230, 57, 70, 0.1);
+}
+
+.payment-method.selected {
+    border-color: #e63946;
+    background-color: rgba(230, 57, 70, 0.2);
+}
+
+.btn-clear-cart {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.btn-checkout {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.cart-empty {
+    text-align: center;
+    padding: 40px;
+    color: #b0b0b0;
+}
         @media (max-width: 991px) {
             .navbar-nav {
                 align-items: flex-start;
@@ -257,7 +322,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <main class="container my-5">
         
- <section id="entradas" class="mb-5">
+    <section id="entradas" class="mb-5">
         <h2 class="category-title">Entradas</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
@@ -299,7 +364,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-     <section id="niguiris" class="mb-5">
+    <section id="niguiris" class="mb-5">
         <h2 class="category-title">Sushis e Niguiris</h2>
         <div class="row g-4">
             <?php foreach ($pratos as $prato): ?>
@@ -403,17 +468,53 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </div>
     </section>
-
-
-
-
-       
-
     </main>
 
     <footer class="bg-black text-center py-4 border-top border-secondary">
         <p class="mb-0 text-secondary">&copy; 2026 Sushi WABI-SABI - Qualidade e Tradição.</p>
     </footer>
+
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content cart-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart3"></i> Seu Carrinho
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="cartContent">
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="finalizarPedido()">
+                        <i class="bi bi-check-circle"></i> Finalizar Pedido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content cart-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-credit-card"></i> Formas de Pagamento
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="paymentContent">
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmarPedido()">
+                        <i class="bi bi-check-circle"></i> Confirmar Pedido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
