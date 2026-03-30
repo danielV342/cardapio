@@ -562,12 +562,23 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
                     <button type="button" class="btn btn-primary" onclick="confirmarPedido()">
-                        <i class="bi bi-check-circle"></i> Confirmar Pedido
+                        Confirmar Pedido
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Botão flutuante do carrinho para mobile -->
+    <!-- <div class="position-fixed bottom-0 end-0 m-4 d-lg-none">
+        <button class="btn btn-danger rounded-circle p-3 shadow"
+            onclick="document.querySelector('.nav-icons .position-relative').click()"
+            style="width: 60px; height: 60px;">
+            <i class="bi bi-cart3 fs-4"></i>
+            <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.7rem;">0</span>
+        </button>
+    </div> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -584,6 +595,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
         });
+
         // Carregar carrinho do localStorage ou criar vazio
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -615,21 +627,20 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     quantity: 1
                 });
             }
+
+            saveCart();
+
+            // Feedback visual
+            const btn = event.target.closest('.btn-order');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado';
+            btn.style.backgroundColor = '#28a745';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.backgroundColor = '#e63946';
+            }, 1500);
         }
-
-        saveCart();
-
-        // Feedback visual
-        const btn = event.target.closest('.btn-order');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado';
-        btn.style.backgroundColor = '#28a745';
-
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.backgroundColor = '#e63946';
-        }, 1500);
-    }
 
         // Função para remover item do carrinho
         function removeFromCart(itemId) {
