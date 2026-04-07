@@ -70,9 +70,13 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .card-sushi {
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #696969;
             transition: transform 0.3s ease;
             height: 100%;
+        }
+
+        .card-sushi h5 {
+            color: #fff;
         }
 
         .card-sushi:hover {
@@ -154,7 +158,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .cart-count {
             position: absolute;
-            top: -8px;
+            top: -4px;
             right: -8px;
             background: #e63946;
             color: white;
@@ -186,6 +190,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: #fff;
         }
 
+        .modal-title {
+            color: #333;
+        }
+
         .cart-modal .modal-content {
             background-color: #1a1a1a;
             border: 1px solid #333;
@@ -194,7 +202,16 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .cart-item {
             border-bottom: 1px solid #333;
+            color: #e63946;
             padding: 10px 0;
+        }
+        
+        .cart-item h6 {
+            color: #1a1a1a;
+        }
+
+        .cart-item strong {
+            color: #ffaa00;
         }
 
         .cart-item:last-child {
@@ -244,6 +261,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 10px 20px;
             border-radius: 5px;
             font-weight: bold;
+        }
+
+        .modal-body {
+            color: #1a1a1a;
+        }
+
+        .text-secondary.d-block {
+            color: #7a4e4e !important;
         }
 
         .cart-empty {
@@ -568,17 +593,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-
-    <!-- Botão flutuante do carrinho para mobile -->
-    <!-- <div class="position-fixed bottom-0 end-0 m-4 d-lg-none">
-        <button class="btn btn-danger rounded-circle p-3 shadow"
-            onclick="document.querySelector('.nav-icons .position-relative').click()"
-            style="width: 60px; height: 60px;">
-            <i class="bi bi-cart3 fs-4"></i>
-            <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                style="font-size: 0.7rem;">0</span>
-        </button>
-    </div> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
