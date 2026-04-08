@@ -153,7 +153,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .text-secondary {
-            color: #b0b0b0 !important;
+            color: #525050 !important;
         }
 
         .cart-count {
@@ -350,26 +350,31 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto text-uppercase" style="font-size: 0.85rem; font-weight: 500;">
-                    <li class="nav-item"><a class="nav-link px-3" href="#entradas">Entradas</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#sashimis">Sashimis</a></li>
-
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            Sushis
+                            Entradas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#niguiris">Niguiris</a></li>
-                            <li><a class="dropdown-item" href="#rolls">Rolls Especiais</a></li>
-                            <li>
-                                <hr class="dropdown-divider bg-secondary">
-                            </li>
-                            <li><a class="dropdown-item" href="#wabiSabi">Experiência Wabi-Sabi</a></li>
+                            <li><a class="dropdown-item" href="#petisco">Petiscos</a></li>
+                            <li><a class="dropdown-item" href="sushis">Sushis Tradicionais</a></li>
+                            <li><a class="dropdown-item" href="hossomaki">Hossomaki</a></li>
+                            <li><a class="dropdown-item" href="uramaki">Uramaki</a></li>
+                            <li><a class="dropdown-item" href="sashimis">Sashimis</a></li>
                         </ul>
                     </li>
-
-                    <li class="nav-item"><a class="nav-link px-3" href="#pratosquentes">Pratos quentes</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#bebidas">Bebidas</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#temakis">Temakis</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#hotrolls">Hot Rolls</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#renomados">Pratos Renomados</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#supremo">Supremos</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Bebidas</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="bebida">Sem Álcool</a></li>
+                            <li><a class="dropdown-item" href="alcoolicas">Alcoólicas</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#combo">Combos</a></li>
                 </ul>
 
                 <div class="nav-icons">
@@ -393,15 +398,81 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <main class="container my-5">
 
-        <section id="entradas" class="mb-5">
-            <h2 class="category-title">Entradas</h2>
+        <section id="petisco" class="mb-5">
+            <h2 class="category-title">Petiscos</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 1): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Entradas">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="sushis" class="mb-5">
+            <h2 class="category-title">Sushis Tradicionais</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 2): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Sushi Tradicional">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="hossomaki" class="mb-5">
+            <h2 class="category-title">Hossomaki</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 3): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Hossomaki">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="uramaki" class="mb-5">
+            <h2 class="category-title">Uramaki</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 4): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Uramaki">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
@@ -419,77 +490,11 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="category-title">Sashimis</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
-                    <?php if ($prato['id_categoria'] == 2): ?>
-                        <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
-                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
-                                <div class="ms-3">
-                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
-                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
-                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <section id="niguiris" class="mb-5">
-            <h2 class="category-title">Sushis e Niguiris</h2>
-            <div class="row g-4">
-                <?php foreach ($pratos as $prato): ?>
-                    <?php if ($prato['id_categoria'] == 3): ?>
-                        <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
-                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
-                                <div class="ms-3">
-                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
-                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
-                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <section id="rolls" class="mb-5">
-            <h2 class="category-title">Rolls & Especiais</h2>
-            <div class="row g-4">
-                <?php foreach ($pratos as $prato): ?>
-                    <?php if ($prato['id_categoria'] == 4): ?>
-                        <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
-                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
-                                <div class="ms-3">
-                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
-                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
-                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <section id="wabiSabi" class="mb-5">
-            <h2 class="category-title">Experiência Wabi Sabi</h2>
-            <div class="row g-4">
-                <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 5): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Sashimi">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
@@ -503,15 +508,81 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </section>
 
-        <section id="pratosquentes" class="mb-5">
-            <h2 class="category-title">Pratos Quentes</h2>
+        <section id="temakis" class="mb-5">
+            <h2 class="category-title">Temakis</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 6): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
                                 <img style="border-radius: 50px;" src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Temaki">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="hotrolls" class="mb-5">
+            <h2 class="category-title">Hot Rolls</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 7): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Hot Roll">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="renomados" class="mb-5">
+            <h2 class="category-title">Pratos Renomados</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 8): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Pratos Renomados">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="supremo" class="mb-5">
+            <h2 class="category-title">Supremos</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 9): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Sobremesas">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
@@ -529,11 +600,55 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="category-title">Bebidas</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 10): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Bebidas">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="alcoolicas" class="mb-5">
+            <h2 class="category-title">Bebidas Alcoólicas</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
+                    <?php if ($prato['id_categoria'] == 11): ?>
+                        <div class="col-md-6">
+                            <div class="card card-sushi flex-row align-items-center p-3">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="alcoolicas">
+                                <div class="ms-3">
+                                    <h5 class="mb-1"><?= $prato['nome'] ?></h5>
+                                    <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
+                                    <span class="price-tag">R$ <?= $prato['preco'] ?></span>
+                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <section id="combo" class="mb-5">
+            <h2 class="category-title">Combos</h2>
+            <div class="row g-4">
+                <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 7): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Shimeji">
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="combos">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
@@ -730,9 +845,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
-                    </div>
-                    <div class="mt-1">
-                        <strong>Subtotal: R$ ${(item.preco * item.quantity).toFixed(2)}</strong>
                     </div>
                 </div>
             `;
