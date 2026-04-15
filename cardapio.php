@@ -211,7 +211,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .cart-item strong {
-            color: #ffaa00;
+            color: #d4af37;
         }
 
         .cart-item:last-child {
@@ -356,11 +356,11 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Entradas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#petisco">Petiscos</a></li>
-                            <li><a class="dropdown-item" href="sushis">Sushis Tradicionais</a></li>
-                            <li><a class="dropdown-item" href="hossomaki">Hossomaki</a></li>
-                            <li><a class="dropdown-item" href="uramaki">Uramaki</a></li>
-                            <li><a class="dropdown-item" href="sashimis">Sashimis</a></li>
+                            <li><a class="dropdown-item" href="#entradas">Entradas</a></li>
+                            <li><a class="dropdown-item" href="#sushis">Sushis Tradicionais</a></li>
+                            <li><a class="dropdown-item" href="#hossomaki">Hossomaki</a></li>
+                            <li><a class="dropdown-item" href="#uramaki">Uramaki</a></li>
+                            <li><a class="dropdown-item" href="#sashimis">Sashimis</a></li>
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link px-3" href="#temakis">Temakis</a></li>
@@ -370,8 +370,8 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Bebidas</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="bebida">Sem Álcool</a></li>
-                            <li><a class="dropdown-item" href="alcoolicas">Alcoólicas</a></li>
+                            <li><a class="dropdown-item" href="#bebida">Sem Álcool</a></li>
+                            <li><a class="dropdown-item" href="#alcoolicas">Alcoólicas</a></li>
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link px-3" href="#combo">Combos</a></li>
@@ -398,8 +398,8 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <main class="container my-5">
 
-        <section id="petisco" class="mb-5">
-            <h2 class="category-title">Petiscos</h2>
+        <section id="entradas" class="mb-5">
+            <h2 class="category-title">Entradas</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 1): ?>
@@ -515,8 +515,8 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php if ($prato['id_categoria'] == 6): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
-                                <img style="border-radius: 50px;" src="img/<?= $prato['id_prato'] ?>.jpg"
-                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Temaki">
+                                <img src="img/<?= $prato['id_prato'] ?>.jpg"
+                                    style="width: 100px; height: 100px; object-fit: cover;" alt="Temakis">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
@@ -641,10 +641,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </section>
 
         <section id="combo" class="mb-5">
-            <h2 class="category-title">Combos</h2>
+            <h2 class="category-title">Combinados</h2>
             <div class="row g-4">
                 <?php foreach ($pratos as $prato): ?>
-                    <?php if ($prato['id_categoria'] == 7): ?>
+                    <?php if ($prato['id_categoria'] == 12): ?>
                         <div class="col-md-6">
                             <div class="card card-sushi flex-row align-items-center p-3">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
