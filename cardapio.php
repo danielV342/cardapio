@@ -965,6 +965,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         let currentCustomizeItem = null;
         let currentPieces = 1;
+        let selectedPayment = '';
 
         // Função para salvar carrinho no localStorage
         function saveCart() {
@@ -984,17 +985,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             currentCustomizeItem = prato;
             currentPieces = 1;
 
-            // Verificar se é bebida (categorias 10 ou 11)
             const isBebida = (prato.id_categoria == 10 || prato.id_categoria == 11);
             const pratosComAcucar = [40];
             const temOpcaoAcucar = pratosComAcucar.includes(prato.id_prato);
             const isRefrigerante = (prato.id_prato == 39);
             const isSuco = (prato.id_categoria == 10 && prato.id_prato != 39);
-            const isAlccolica = (prato.id_categoria == 11);
 
             if (isBebida) {
                 const customizeContent = document.getElementById('customizeContent');
-
                 let html = `
             <div class="text-center mb-4">
                 <h4>${prato.nome}</h4>
@@ -1002,16 +1000,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <p class="text-secondary mt-2">${prato.descricao}</p>
                 <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
             </div>
-            
             <div class="pieces-selector">
                 <button class="minus" onclick="changePieces(-1)">-</button>
                 <span id="piecesCount">${currentPieces}</span>
                 <button class="plus" onclick="changePieces(1)">+</button>
                 <span class="ms-3">unidade(s)</span>
             </div>
-
             <h6><i class="bi bi-sliders2"></i> Personalize sua bebida:</h6>
-                `;
+        `;
 
                 if (isRefrigerante) {
                     html += `
@@ -1020,14 +1016,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select id="bebidaSabor" class="form-select">
                         <option value="Coca-Cola">Coca-Cola</option>
                         <option value="Coca-Cola Zero">Coca-Cola Zero</option>
-                        option value="Guaraná Antarctica">Guaraná Antarctica</option>
+                        <option value="Guaraná Antarctica">Guaraná Antarctica</option>
                         <option value="Fanta Laranja">Fanta Laranja</option>
                         <option value="Fanta Uva">Fanta Uva</option>
                         <option value="Schweppes">Schweppes</option>
                         <option value="Pepsi">Pepsi</option>
                     </select>
                 </div>
-                    `;
+            `;
                 } else {
                     html += `
                 <div class="customization-option">
@@ -1039,8 +1035,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="extra gelo">Extra gelo (+ R$ 1,00)</option>
                     </select>
                 </div>
-                    `;
-
+            `;
                     if (isSuco) {
                         html += `
                 <div class="customization-option">
@@ -1058,11 +1053,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <label class="form-check-label">Canela em pau (R$ 1,00)</label>
                     </div>
                 </div>
-                        `;
+                `;
                     }
                 }
 
-                // Só adicionar a opção de adoçar se o prato estiver na lista específica (apenas ID 40)
                 if (temOpcaoAcucar && !isRefrigerante) {
                     html += `
                 <div class="customization-option">
@@ -1084,7 +1078,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <label class="form-check-label">Com adoçante (+ R$ 0,50)</label>
                     </div>
                 </div>
-                    `;
+            `;
                 }
 
                 html += `
@@ -1092,7 +1086,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
                 <textarea id="observationText" rows="3" placeholder="Ex: Pouco gelo, sem limão, etc..."></textarea>
             </div>
-                `;
+        `;
 
                 customizeContent.innerHTML = html;
                 new bootstrap.Modal(document.getElementById('customizeModal')).show();
@@ -1108,16 +1102,13 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-secondary mt-2">${prato.descricao}</p>
             <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
         </div>
-        
         <div class="pieces-selector">
             <button class="minus" onclick="changePieces(-1)">-</button>
             <span id="piecesCount">${currentPieces}</span>
             <button class="plus" onclick="changePieces(1)">+</button>
             <span class="ms-3">peça(s)</span>
         </div>
-
         <h6><i class="bi bi-sliders2"></i> Personalize seu pedido:</h6>
-
         <div class="customization-option">
             <label><i class="bi bi-plus-circle"></i> Extras:</label>
             <div class="form-check">
@@ -1149,7 +1140,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <label class="form-check-label">Wasabi (R$ 1,00)</label>
             </div>
         </div>
-
         <div class="customization-option">
             <label><i class="bi bi-arrow-left-right"></i> Substituir proteína:</label>
             <select id="substituteProtein" class="form-select">
@@ -1159,21 +1149,17 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <option value="salmao">Salmão (+ R$ 9,00)</option>
             </select>
         </div>
-        
         <div class="observation-field">
             <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
             <textarea id="observationText" rows="3" placeholder="Ex: Sem cebolinha, pouco shoyu, bem passado..."></textarea>
         </div>
-            `;
-
+    `;
             new bootstrap.Modal(document.getElementById('customizeModal')).show();
         }
-        // Função para adicionar bebida personalizada ao carrinho
+
         function addCustomizedBebidaToCart() {
             const observation = document.getElementById('observationText')?.value || '';
             const precoUnitario = parseFloat(currentCustomizeItem.preco);
-
-            // VERIFICAR SE É REFRIGERANTE (ID 40)
             const isRefrigerante = (currentCustomizeItem.id_prato == 39);
             const isSuco = (currentCustomizeItem.id_categoria == 10 && currentCustomizeItem.id_prato != 39);
 
@@ -1181,14 +1167,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             let adicional = 0;
 
             if (isRefrigerante) {
-                // Para refrigerante, capturar apenas o sabor
                 const sabor = document.getElementById('bebidaSabor')?.value || 'Coca-Cola';
                 personalizationText = ` - Sabor: ${sabor}`;
             } else {
-                // Para outras bebidas, manter as opções normais
                 const temperatura = document.getElementById('bebidaTemperatura')?.value || 'normal';
-
-                // Temperatura
                 if (temperatura === 'gelo') {
                     adicional += 0.50;
                     personalizationText += ', +Gelo';
@@ -1203,7 +1185,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     const temLimao = document.getElementById('bebidaLimao')?.checked || false;
                     const temHortela = document.getElementById('bebidaHortela')?.checked || false;
                     const temCanela = document.getElementById('bebidaCanela')?.checked || false;
-
                     if (temLimao) {
                         adicional += 0.50;
                         personalizationText += ', +Limão';
@@ -1218,14 +1199,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     }
                 }
 
-                // Verificar se tem opção de açúcar (apenas para ID 40)
                 const pratosComAcucar = [40];
                 const temOpcaoAcucar = pratosComAcucar.includes(currentCustomizeItem.id_prato);
-
-                let acucar = null;
                 if (temOpcaoAcucar) {
-                    acucar = document.querySelector('input[name="bebidaAcucar"]:checked')?.value || 'normal';
-
+                    const acucar = document.querySelector('input[name="bebidaAcucar"]:checked')?.value || 'normal';
                     if (acucar === 'pouco') {
                         personalizationText += ', Pouco açúcar';
                     } else if (acucar === 'sem') {
@@ -1237,14 +1214,9 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             }
 
-            if (observation) {
-                personalizationText += ` - Obs: ${observation}`;
-            }
-
-            // Calcular preço total
+            if (observation) personalizationText += ` - Obs: ${observation}`;
             const precoTotal = (precoUnitario * currentPieces) + adicional;
 
-            // Criar item personalizado
             const customItem = {
                 id: currentCustomizeItem.id_prato + '_' + Date.now(),
                 nome: currentCustomizeItem.nome + personalizationText,
@@ -1258,28 +1230,22 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 observation: observation,
                 adicional: adicional
             };
-
             cart.push(customItem);
             saveCart();
 
-            // Feedback visual
             const btn = document.getElementById('confirmCustomizeBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado!';
             btn.style.backgroundColor = '#28a745';
-
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.style.backgroundColor = '#e63946';
             }, 1500);
-
             setTimeout(() => {
                 bootstrap.Modal.getInstance(document.getElementById('customizeModal')).hide();
             }, 500);
         }
 
-
-        // Função para alterar quantidade de peças
         function changePieces(delta) {
             currentPieces += delta;
             if (currentPieces < 1) currentPieces = 1;
@@ -1287,12 +1253,9 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('piecesCount').innerText = currentPieces;
         }
 
-        // Função para adicionar item personalizado ao carrinho
         function addCustomizedToCart() {
             const observation = document.getElementById('observationText')?.value || '';
             const precoUnitario = parseFloat(currentCustomizeItem.preco);
-
-            // Capturar os valores das novas opções de personalização
             const extraGergelim = document.getElementById('extraGergelim')?.checked || false;
             const extraMolhoBranco = document.getElementById('extraMolhoBranco')?.checked || false;
             const extraCebolinha = document.getElementById('extraCebolinha')?.checked || false;
@@ -1302,143 +1265,84 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const extraWassabi = document.getElementById('extraWassabi')?.checked || false;
             const substitute = document.getElementById('substituteProtein')?.value || '';
 
-            // Calcular adicionais
             let adicional = 0;
             let extrasTexto = '';
-
-            if (extraGergelim) {
-                adicional += 1.00;
-                extrasTexto += ', +Gergelim';
-            }
-            if (extraMolhoBranco) {
-                adicional += 2.00;
-                extrasTexto += ', +MolhoBranco';
-            }
-            if (extraCebolinha) {
-                adicional += 1.00;
-                extrasTexto += ', +Cebolinha';
-            }
-            if (extraCreamCheese) {
-                adicional += 3.00;
-                extrasTexto += ', +CreamCheese';
-            }
-            if (extraShoyu) {
-                adicional += 1.00;
-                extrasTexto += ', +Shoyu';
-            }
-            if (extraTeriaki) {
-                adicional += 2.00;
-                extrasTexto += ', +Teriaki';
-            }
-            if (extraWassabi) {
-                adicional += 1.00;
-                extrasTexto += ', +Wassabi';
-            }
+            if (extraGergelim) { adicional += 1.00; extrasTexto += ', +Gergelim'; }
+            if (extraMolhoBranco) { adicional += 2.00; extrasTexto += ', +MolhoBranco'; }
+            if (extraCebolinha) { adicional += 1.00; extrasTexto += ', +Cebolinha'; }
+            if (extraCreamCheese) { adicional += 3.00; extrasTexto += ', +CreamCheese'; }
+            if (extraShoyu) { adicional += 1.00; extrasTexto += ', +Shoyu'; }
+            if (extraTeriaki) { adicional += 2.00; extrasTexto += ', +Teriaki'; }
+            if (extraWassabi) { adicional += 1.00; extrasTexto += ', +Wassabi'; }
 
             let substituicaoTexto = '';
             let substituicaoCusto = 0;
-            if (substitute === 'atum') {
-                substituicaoCusto = 5.00;
-                substituicaoTexto = ', Troca: Atum';
-            } else if (substitute === 'camarao') {
-                substituicaoCusto = 8.00;
-                substituicaoTexto = ', Troca: Camarão';
-            } else if (substitute === 'salmao') {
-                substituicaoCusto = 9.00;
-                substituicaoTexto = ', Troca: Salmão';
-            }
+            if (substitute === 'atum') { substituicaoCusto = 5.00; substituicaoTexto = ', Troca: Atum'; }
+            else if (substitute === 'camarao') { substituicaoCusto = 8.00; substituicaoTexto = ', Troca: Camarão'; }
+            else if (substitute === 'salmao') { substituicaoCusto = 9.00; substituicaoTexto = ', Troca: Salmão'; }
             adicional += substituicaoCusto;
 
-            // Calcular preço total com adicionais
             const precoTotal = (precoUnitario * currentPieces) + adicional;
-
             let personalizationText = '';
-            if (extrasTexto) {
-                personalizationText += extrasTexto;
-            }
-            if (substituicaoTexto) {
-                personalizationText += substituicaoTexto;
-            }
-            if (observation) {
-                personalizationText += ` - Obs: ${observation}`;
-            }
+            if (extrasTexto) personalizationText += extrasTexto;
+            if (substituicaoTexto) personalizationText += substituicaoTexto;
+            if (observation) personalizationText += ` - Obs: ${observation}`;
 
-            // Criar item personalizado
             const customItem = {
-                id: currentCustomizeItem.id_prato + '_' + Date.now(), // ID único para cada personalização
+                id: currentCustomizeItem.id_prato + '_' + Date.now(),
                 nome: currentCustomizeItem.nome + personalizationText,
                 preco: precoTotal,
                 quantity: 1,
                 originalPreco: precoUnitario,
                 pieces: currentPieces,
-                extraGergelim: extraGergelim,
-                extraMolhoBranco: extraMolhoBranco,
-                extraCebolinha: extraCebolinha,
-                extraCreamCheese: extraCreamCheese,
-                extraShoyu: extraShoyu,
-                extraTeriaki: extraTeriaki,
-                extraWassabi: extraWassabi,
-                substitute: substitute,
-                observation: observation,
-                adicional: adicional
+                extraGergelim, extraMolhoBranco, extraCebolinha, extraCreamCheese, extraShoyu, extraTeriaki, extraWassabi,
+                substitute, observation, adicional
             };
-
             cart.push(customItem);
             saveCart();
 
-            // Feedback visual
             const btn = document.getElementById('confirmCustomizeBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado!';
             btn.style.backgroundColor = '#28a745';
-
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.style.backgroundColor = '#e63946';
             }, 1500);
-
             setTimeout(() => {
                 bootstrap.Modal.getInstance(document.getElementById('customizeModal')).hide();
             }, 500);
         }
 
-        // Função para adicionar item ao carrinho
         function addToCart(prato) {
             const existingItem = cart.find(item => item.id === prato.id);
-
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                cart.push({
-                    id: prato.id,
-                    nome: prato.nome,
-                    preco: prato.preco,
-                    quantity: 1
-                });
+                cart.push({ id: prato.id, nome: prato.nome, preco: prato.preco, quantity: 1 });
             }
-
             saveCart();
 
-            // Feedback visual
-            const btn = event.target.closest('.btn-order');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado';
-            btn.style.backgroundColor = '#28a745';
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.backgroundColor = '#e63946';
-            }, 1500);
+            if (event && event.target) {
+                const btn = event.target.closest('.btn-order');
+                if (btn) {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado';
+                    btn.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.backgroundColor = '#e63946';
+                    }, 1500);
+                }
+            }
         }
 
-        // Função para remover item do carrinho
         function removeFromCart(itemId) {
             cart = cart.filter(item => item.id !== itemId);
             saveCart();
             displayCart();
         }
 
-        // Função para atualizar quantidade
         function updateQuantity(itemId, change) {
             const item = cart.find(item => item.id === itemId);
             if (item) {
@@ -1452,7 +1356,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        // Função para limpar carrinho
         function clearCart() {
             if (confirm('Tem certeza que deseja limpar o carrinho?')) {
                 cart = [];
@@ -1461,135 +1364,107 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        // Função para calcular total
         function calculateTotal() {
             return cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0);
         }
 
-        // Função para exibir o carrinho
         function displayCart() {
             const cartContent = document.getElementById('cartContent');
-
             if (cart.length === 0) {
                 cartContent.innerHTML = `
-                <div class="cart-empty">
-                    <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
-                    <p class="mt-3">Seu carrinho está vazio!</p>
-                    <button class="btn btn-primary" data-bs-dismiss="modal">
-                        Continuar Comprando
-                    </button>
-                </div>
-            `;
+            <div class="cart-empty">
+                <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+                <p class="mt-3">Seu carrinho está vazio!</p>
+                <button class="btn btn-primary" data-bs-dismiss="modal">Continuar Comprando</button>
+            </div>
+        `;
                 return;
             }
-
             let html = '<div class="cart-items">';
-
             cart.forEach(item => {
                 html += `
-                <div class="cart-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">${item.nome}</h6>
-                            <small class="text-secondary">R$ ${item.preco.toFixed(2)}</small>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity('${item.id}', -1)">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <span class="mx-2">${item.quantity}</span>
-                            <button class="btn btn-sm btn-outline-success" onclick="updateQuantity('${item.id}', 1)">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${item.id}')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
+            <div class="cart-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">${item.nome}</h6>
+                        <small class="text-secondary">R$ ${item.preco.toFixed(2)}</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity('${item.id}', -1)">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <span class="mx-2">${item.quantity}</span>
+                        <button class="btn btn-sm btn-outline-success" onclick="updateQuantity('${item.id}', 1)">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${item.id}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
             });
-
             html += `
-            <div class="cart-total">
-                <div class="d-flex justify-content-between">
-                    <strong>Total:</strong>
-                    <strong>R$ ${calculateTotal().toFixed(2)}</strong>
-                </div>
+        <div class="cart-total">
+            <div class="d-flex justify-content-between">
+                <strong>Total:</strong>
+                <strong>R$ ${calculateTotal().toFixed(2)}</strong>
             </div>
-            <div class="mt-3">
-                <button class="btn btn-clear-cart" onclick="clearCart()">
-                    <i class="bi bi-trash3"></i> Limpar Carrinho
-                </button>
-            </div>
-        </div>`;
-
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-clear-cart" onclick="clearCart()">
+                <i class="bi bi-trash3"></i> Limpar Carrinho
+            </button>
+        </div>
+    </div>`;
             cartContent.innerHTML = html;
         }
 
-        // Função para abrir o modal de pagamento
         function finalizarPedido() {
             if (cart.length === 0) {
                 alert('Seu carrinho está vazio!');
                 return;
             }
-
             const total = calculateTotal();
             const paymentContent = document.getElementById('paymentContent');
-
             paymentContent.innerHTML = `
-            <div class="mb-4">
-                <h6>Resumo do Pedido:</h6>
-                <p class="text-secondary">Total de itens: ${cart.reduce((sum, item) => sum + item.quantity, 0)}</p>
-                <h5 class="text-danger">Total: R$ ${total.toFixed(2)}</h5>
-            </div>
-            
-            <h6 class="mb-3">Selecione a forma de pagamento:</h6>
-            
-            <div class="payment-method" onclick="selectPayment('Dinheiro')">
-                <i class="bi bi-cash-stack"></i> Dinheiro
-                <small class="text-secondary d-block">(10% de desconto)</small>
-            </div>
-            
-            <div class="payment-method" onclick="selectPayment('Pix')">
-                <i class="bi bi-qr-code"></i> Pix
-                <small class="text-secondary d-block">(5% de desconto)</small>
-            </div>
-            
-            <div class="payment-method" onclick="selectPayment('Cartão de Crédito')">
-                <i class="bi bi-credit-card"></i> Cartão de Crédito
-                <small class="text-secondary d-block">(Até 3x sem juros)</small>
-            </div>
-            
-            <div class="payment-method" onclick="selectPayment('Cartão de Débito')">
-                <i class="bi bi-bank2"></i> Cartão de Débito
-            </div>
-            
-            <input type="hidden" id="selectedPayment" value="">
-        `;
-
-            // Fechar modal do carrinho e abrir modal de pagamento
+        <div class="mb-4">
+            <h6>Resumo do Pedido:</h6>
+            <p class="text-secondary">Total de itens: ${cart.reduce((sum, item) => sum + item.quantity, 0)}</p>
+            <h5 class="text-danger">Total: R$ ${total.toFixed(2)}</h5>
+        </div>
+        <h6 class="mb-3">Selecione a forma de pagamento:</h6>
+        <div class="payment-method" onclick="selectPayment('Dinheiro')">
+            <i class="bi bi-cash-stack"></i> Dinheiro
+            <small class="text-secondary d-block">(10% de desconto)</small>
+        </div>
+        <div class="payment-method" onclick="selectPayment('Pix')">
+            <i class="bi bi-qr-code"></i> Pix
+            <small class="text-secondary d-block">(5% de desconto)</small>
+        </div>
+        <div class="payment-method" onclick="selectPayment('Cartão de Crédito')">
+            <i class="bi bi-credit-card"></i> Cartão de Crédito
+            <small class="text-secondary d-block">(Até 3x sem juros)</small>
+        </div>
+        <div class="payment-method" onclick="selectPayment('Cartão de Débito')">
+            <i class="bi bi-bank2"></i> Cartão de Débito
+        </div>
+        <input type="hidden" id="selectedPayment" value="">
+    `;
             bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
             new bootstrap.Modal(document.getElementById('paymentModal')).show();
         }
 
-        // Função para selecionar forma de pagamento
-        let selectedPayment = '';
-
         function selectPayment(payment) {
             selectedPayment = payment;
-
-            // Remover seleção anterior
-            document.querySelectorAll('.payment-method').forEach(el => {
-                el.classList.remove('selected');
-            });
-
-            // Adicionar seleção ao elemento clicado
-            event.target.closest('.payment-method').classList.add('selected');
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            if (event && event.target) {
+                event.target.closest('.payment-method').classList.add('selected');
+            }
             document.getElementById('selectedPayment').value = payment;
         }
 
-        // Salvar pedido no localStorage do usuário
         function salvarPedidoHistorico(pedido) {
             const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
             if (usuarioId) {
@@ -1601,13 +1476,11 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        // Carregar histórico de pedidos
         function carregarHistoricoPedidos() {
             const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
             if (usuarioId) {
                 const historico = JSON.parse(localStorage.getItem(`pedidos_${usuarioId}`)) || [];
                 const pedidosContent = document.getElementById('pedidosContent');
-
                 if (historico.length === 0) {
                     pedidosContent.innerHTML = `
                 <div class="text-center py-5">
@@ -1625,10 +1498,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <small>${pedido.data}</small>
                         </div>
                         <div class="mt-2">
-                            <strong>Total:</strong> R$ ${pedido.total.toFixed(2)}
+                            <strong>Total:</strong> R$ ${pedido.total ? pedido.total.toFixed(2) : '0,00'}
                         </div>
                         <div class="mt-2">
-                            <strong>Forma de Pagamento:</strong> ${pedido.pagamento}
+                            <strong>Forma de Pagamento:</strong> ${pedido.pagamento || 'Não informado'}
                         </div>
                         <button class="btn btn-sm btn-outline-danger mt-2" onclick="alert('Repetir pedido #${pedido.id}')">
                             <i class="bi bi-arrow-repeat"></i> Pedir Novamente
@@ -1642,34 +1515,62 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        // Adicionar evento aos botões "Adicionar"
+        function confirmarPedido() {
+            if (!selectedPayment) {
+                alert('Por favor, selecione uma forma de pagamento!');
+                return;
+            }
+            const total = calculateTotal();
+            let finalTotal = total;
+            let desconto = 0;
+            if (selectedPayment === 'Dinheiro') {
+                desconto = total * 0.1;
+                finalTotal = total - desconto;
+            } else if (selectedPayment === 'Pix') {
+                desconto = total * 0.05;
+                finalTotal = total - desconto;
+            }
+            let mensagem = `**NOVO PEDIDO - WABI-SABI**\n\n`;
+            mensagem += `*Itens do pedido:*\n`;
+            cart.forEach(item => {
+                mensagem += `• ${item.quantity}x ${item.nome} - R$ ${(item.preco * item.quantity).toFixed(2)}\n`;
+            });
+            mensagem += `\n*Subtotal:* R$ ${total.toFixed(2)}`;
+            if (desconto > 0) mensagem += `\n*Desconto:* -R$ ${desconto.toFixed(2)}`;
+            mensagem += `\n*Total:* R$ ${finalTotal.toFixed(2)}`;
+            mensagem += `\n*Forma de Pagamento:* ${selectedPayment}`;
+
+            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+            if (usuarioId) {
+                const pedido = {
+                    itens: cart.map(item => ({ nome: item.nome, quantidade: item.quantity, preco: item.preco })),
+                    subtotal: total,
+                    desconto: desconto,
+                    total: finalTotal,
+                    pagamento: selectedPayment
+                };
+                salvarPedidoHistorico(pedido);
+            }
+            alert(`Pedido confirmado!\n\n${mensagem}\n\nObrigado pela preferência!`);
+            cart = [];
+            saveCart();
+            bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+            displayCart();
+        }
+
+        // Eventos
         document.querySelectorAll('.btn-order').forEach(btn => {
             btn.addEventListener('click', function (e) {
-                e.stopPropagation(); // Evitar propagação para o card
+                e.stopPropagation();
                 const card = btn.closest('.card-sushi');
                 const nome = card.querySelector('h5').innerText;
                 const precoText = card.querySelector('.price-tag').innerText;
                 const preco = parseFloat(precoText.replace('R$ ', '').replace(',', '.'));
-
-                // Gerar ID único baseado no nome (simplificado)
                 const id = nome.hashCode ? nome.hashCode() : Math.random();
-
-                // Para bebidas (categorias 10 e 11) adicionar direto
-                const isBebida = card.closest('#bebidas') !== null || card.closest('#alcoolicas') !== null;
-
-                if (isBebida) {
-                    addToCart({
-                        id: id,
-                        nome: nome,
-                        preco: preco
-                    });
-                } else {
-
-                }
+                addToCart({ id: id, nome: nome, preco: preco });
             });
         });
 
-        // Função para abrir o modal do carrinho
         document.querySelector('.nav-icons .position-relative').addEventListener('click', function (e) {
             e.preventDefault();
             displayCart();
@@ -1679,9 +1580,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const confirmBtn = document.getElementById('confirmCustomizeBtn');
         if (confirmBtn) {
             confirmBtn.addEventListener('click', function () {
-                // Verificar se é bebida
                 const isBebida = (currentCustomizeItem && (currentCustomizeItem.id_categoria == 10 || currentCustomizeItem.id_categoria == 11));
-
                 if (isBebida) {
                     addCustomizedBebidaToCart();
                 } else {
@@ -1690,83 +1589,15 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
 
-        // Função para confirmar pedido
-        function confirmarPedido() {
-            if (!selectedPayment) {
-                alert('Por favor, selecione uma forma de pagamento!');
-                return;
-            }
-
-            const total = calculateTotal();
-            let finalTotal = total;
-            let desconto = 0;
-
-            if (selectedPayment === 'Dinheiro') {
-                desconto = total * 0.1;
-                finalTotal = total - desconto;
-            } else if (selectedPayment === 'Pix') {
-                desconto = total * 0.05;
-                finalTotal = total - desconto;
-            }
-
-            // Criar mensagem do pedido
-            let mensagem = `**NOVO PEDIDO - WABI-SABI**\n\n`;
-            mensagem += `*Itens do pedido:*\n`;
-            cart.forEach(item => {
-                mensagem += `• ${item.quantity}x ${item.nome} - R$ ${(item.preco * item.quantity).toFixed(2)}\n`;
+        const pedidosModal = document.getElementById('pedidosModal');
+        if (pedidosModal) {
+            pedidosModal.addEventListener('show.bs.modal', function () {
+                carregarHistoricoPedidos();
             });
-            mensagem += `\n*Subtotal:* R$ ${total.toFixed(2)}`;
-
-            if (desconto > 0) {
-                mensagem += `\n*Desconto:* -R$ ${desconto.toFixed(2)}`;
-            }
-
-            mensagem += `\n*Total:* R$ ${finalTotal.toFixed(2)}`;
-            mensagem += `\n*Forma de Pagamento:* ${selectedPayment}`;
-
-            // Salvar pedido no histórico do usuário (se estiver logado)
-            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
-            if (usuarioId) {
-                const pedido = {
-                    itens: cart.map(item => ({ nome: item.nome, quantidade: item.quantity, preco: item.preco })),
-                    subtotal: total,
-                    desconto: desconto,
-                    total: finalTotal,
-                    pagamento: selectedPayment,
-                    data: new Date().toLocaleString()
-                };
-                salvarPedidoHistorico(pedido);
-            }
-
-            // Simular envio do pedido (aqui você pode enviar para WhatsApp, API, etc)
-            alert(`Pedido confirmado!\n\n${mensagem}\n\nObrigado pela preferência!`);
-
-            // Limpar carrinho após confirmação
-            cart = [];
-            saveCart();
-
-            // Fechar modal
-            bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
-
-            // Mostrar modal de carrinho vazio
-            displayCart();
         }
 
-        // Salvar pedido no localStorage do usuário
-        function salvarPedidoHistorico(pedido) {
-            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
-            if (usuarioId) {
-                let historico = JSON.parse(localStorage.getItem(`pedidos_${usuarioId}`)) || [];
-                pedido.id = Date.now();
-                historico.push(pedido);
-                localStorage.setItem(`pedidos_${usuarioId}`, JSON.stringify(historico));
-            }
-        }
-
-        // Inicializar contador do carrinho
         updateCartCount();
 
-        // Função auxiliar para hash (caso necessário)
         String.prototype.hashCode = function () {
             let hash = 0;
             for (let i = 0; i < this.length; i++) {
@@ -1776,7 +1607,6 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return hash;
         };
 
-        // Tornar funções globais para acesso no HTML
         window.changePieces = changePieces;
         window.openCustomizeModal = openCustomizeModal;
         window.addToCart = addToCart;
