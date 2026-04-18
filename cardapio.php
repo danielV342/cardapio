@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "conexao.php";
 
 $sql = "SELECT * FROM pratos";
@@ -82,6 +83,10 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .card-sushi:hover {
             transform: translateY(-10px);
             border-color: #e63946;
+        }
+
+        .card-sushi .ms-3 {
+            margin-bottom: 0;
         }
 
         .btn-order {
@@ -205,7 +210,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: #e63946;
             padding: 10px 0;
         }
-        
+
         .cart-item h6 {
             color: #1a1a1a;
         }
@@ -275,6 +280,101 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             text-align: center;
             padding: 40px;
             color: #b0b0b0;
+        }
+
+        .modal-content .customize-modal {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+        }
+
+        .pieces-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+        }
+
+        .pieces-selector button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pieces-selector button.minus {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .pieces-selector button.plus {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .pieces-selector span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .btn-customize-add {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn-customize-add:hover {
+            background-color: #d4af37;
+        }
+
+        .observation-field {
+            margin-top: 20px;
+        }
+
+        .observation-field textarea {
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #333;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        .customization-option {
+            margin: 15px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .customization-option label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-select,
+        .form-check-input {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
         }
 
         @media (max-width: 991px) {
@@ -368,18 +468,50 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item"><a class="nav-link px-3" href="#renomados">Pratos Renomados</a></li>
                     <li class="nav-item"><a class="nav-link px-3" href="#supremo">Supremos</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Bebidas</a>
+                        <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Bebidas</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#bebida">Sem Álcool</a></li>
+                            <li><a class="dropdown-item" href="#bebidas">Sem Álcool</a></li>
                             <li><a class="dropdown-item" href="#alcoolicas">Alcoólicas</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#combo">Combos</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#combo">Combinados</a></li>
                 </ul>
 
                 <div class="nav-icons">
+                    <?php if (isset($_SESSION['usuario_id'])): ?>
+                        <div class="dropdown">
+                            <a href="#"
+                                class="text-white text-decoration-none d-flex flex-column align-items-center dropdown-toggle"
+                                data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle fs-5"></i>
+                                <span style="font-size: 0.7rem;"><?= $_SESSION['usuario_nome'] ?></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#perfilModal"><i class="bi bi-person"></i> Meu Perfil</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#enderecoModal"><i class="bi bi-geo-alt"></i> Meu Endereço</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#pedidosModal"><i class="bi bi-clock-history"></i> Meus Pedidos</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="login.php?logout=1"><i
+                                            class="bi bi-box-arrow-right"></i> Sair</a></li>
+                            </ul>
+                        </div>
+                    <?php else: ?>
+                        <a href="login.php" class="text-white text-decoration-none d-flex flex-column align-items-center">
+                            <i class="bi bi-person-circle fs-5"></i>
+                            <span style="font-size: 0.7rem;">Entrar</span>
+                        </a>
+                    <?php endif; ?>
+
                     <a href="#"
-                        class="text-white text-decoration-none d-flex flex-column align-items-center position-relative">
+                        class="text-white text-decoration-none d-flex flex-column align-items-center position-relative"
+                        onclick="displayCart(); new bootstrap.Modal(document.getElementById('cartModal')).show();">
                         <i class="bi bi-cart3 fs-5"></i>
                         <span class="cart-count">0</span>
                         <span style="font-size: 0.7rem;">Carrinho</span>
@@ -404,14 +536,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 1): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Entradas">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -426,14 +558,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 2): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Sushi Tradicional">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -448,14 +580,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 3): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Hossomaki">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -470,14 +602,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 4): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Uramaki">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -492,14 +624,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 5): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Sashimi">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -514,14 +646,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 6): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Temakis">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -536,14 +668,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 7): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Hot Roll">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -558,14 +690,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 8): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Pratos Renomados">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -580,14 +712,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 9): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Sobremesas">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -602,14 +734,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 10): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="Bebidas">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -624,14 +756,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 11): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="alcoolicas">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -646,14 +778,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($pratos as $prato): ?>
                     <?php if ($prato['id_categoria'] == 12): ?>
                         <div class="col-md-6">
-                            <div class="card card-sushi flex-row align-items-center p-3">
+                            <div class="card card-sushi flex-row align-items-center p-3"
+                                onclick="openCustomizeModal(<?= htmlspecialchars(json_encode($prato)) ?>)">
                                 <img src="img/<?= $prato['id_prato'] ?>.jpg"
                                     style="width: 100px; height: 100px; object-fit: cover;" alt="combos">
                                 <div class="ms-3">
                                     <h5 class="mb-1"><?= $prato['nome'] ?></h5>
                                     <p class="small text-secondary mb-1"><?= $prato['descricao'] ?></p>
                                     <span class="price-tag">R$ <?= $prato['preco'] ?></span>
-                                    <button class="btn-order"><i class="bi bi-plus-circle"></i>Adicionar</button>
                                 </div>
                             </div>
                         </div>
@@ -666,6 +798,27 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <footer class="bg-black text-center py-4 border-top border-secondary">
         <p class="mb-0 text-secondary">&copy; 2026 Sushi WABI-SABI - Qualidade e Tradição.</p>
     </footer>
+
+    <div class="modal fade" id="customizeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content customize-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title">
+                        <i class="bi bi-sliders2"></i> Personalizar Pedido
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="customizeContent">
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-customize-add" id="confirmCustomizeBtn">
+                        <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="cartModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
@@ -709,6 +862,88 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- Modal de Perfil -->
+    <div class="modal fade" id="perfilModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content cart-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title"><i class="bi bi-person"></i> Meu Perfil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <?php if (isset($_SESSION['usuario_id'])): ?>
+                        <div class="text-center mb-3">
+                            <i class="bi bi-person-circle" style="font-size: 80px; color: #e63946;"></i>
+                        </div>
+                        <p><strong>Nome:</strong> <?= $_SESSION['usuario_nome'] ?></p>
+                        <p><strong>Email:</strong> <?= $_SESSION['usuario_email'] ?></p>
+                        <button class="btn btn-primary w-100" onclick="alert('Funcionalidade em desenvolvimento')">Editar
+                            Perfil</button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Endereço -->
+    <div class="modal fade" id="enderecoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content cart-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title"><i class="bi bi-geo-alt"></i> Meu Endereço</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEndereco">
+                        <div class="mb-3">
+                            <label>CEP</label>
+                            <input type="text" class="form-control" id="cep" placeholder="00000-000">
+                        </div>
+                        <div class="mb-3">
+                            <label>Rua</label>
+                            <input type="text" class="form-control" id="rua">
+                        </div>
+                        <div class="mb-3">
+                            <label>Número</label>
+                            <input type="text" class="form-control" id="numero">
+                        </div>
+                        <div class="mb-3">
+                            <label>Bairro</label>
+                            <input type="text" class="form-control" id="bairro">
+                        </div>
+                        <div class="mb-3">
+                            <label>Cidade</label>
+                            <input type="text" class="form-control" id="cidade">
+                        </div>
+                        <div class="mb-3">
+                            <label>Complemento</label>
+                            <input type="text" class="form-control" id="complemento">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Salvar Endereço</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pedidos -->
+    <div class="modal fade" id="pedidosModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content cart-modal">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title"><i class="bi bi-clock-history"></i> Meus Pedidos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="pedidosContent">
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 50px;"></i>
+                        <p class="mt-3">Nenhum pedido encontrado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -728,6 +963,9 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         // Carregar carrinho do localStorage ou criar vazio
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+        let currentCustomizeItem = null;
+        let currentPieces = 1;
+
         // Função para salvar carrinho no localStorage
         function saveCart() {
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -740,6 +978,428 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.querySelectorAll('.cart-count').forEach(el => {
                 el.textContent = totalItems;
             });
+        }
+
+        function openCustomizeModal(prato) {
+            currentCustomizeItem = prato;
+            currentPieces = 1;
+
+            // Verificar se é bebida (categorias 10 ou 11)
+            const isBebida = (prato.id_categoria == 10 || prato.id_categoria == 11);
+            const pratosComAcucar = [40];
+            const temOpcaoAcucar = pratosComAcucar.includes(prato.id_prato);
+            const isRefrigerante = (prato.id_prato == 39);
+            const isSuco = (prato.id_categoria == 10 && prato.id_prato != 39);
+            const isAlccolica = (prato.id_categoria == 11);
+
+            if (isBebida) {
+                const customizeContent = document.getElementById('customizeContent');
+
+                let html = `
+            <div class="text-center mb-4">
+                <h4>${prato.nome}</h4>
+                <img src="img/${prato.id_prato}.jpg" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" alt="${prato.nome}">
+                <p class="text-secondary mt-2">${prato.descricao}</p>
+                <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
+            </div>
+            
+            <div class="pieces-selector">
+                <button class="minus" onclick="changePieces(-1)">-</button>
+                <span id="piecesCount">${currentPieces}</span>
+                <button class="plus" onclick="changePieces(1)">+</button>
+                <span class="ms-3">unidade(s)</span>
+            </div>
+
+            <h6><i class="bi bi-sliders2"></i> Personalize sua bebida:</h6>
+                `;
+
+                if (isRefrigerante) {
+                    html += `
+                <div class="customization-option">
+                    <label><i class="bi bi-cup-straw"></i> Escolha o sabor:</label>
+                    <select id="bebidaSabor" class="form-select">
+                        <option value="Coca-Cola">Coca-Cola</option>
+                        <option value="Coca-Cola Zero">Coca-Cola Zero</option>
+                        option value="Guaraná Antarctica">Guaraná Antarctica</option>
+                        <option value="Fanta Laranja">Fanta Laranja</option>
+                        <option value="Fanta Uva">Fanta Uva</option>
+                        <option value="Schweppes">Schweppes</option>
+                        <option value="Pepsi">Pepsi</option>
+                    </select>
+                </div>
+                    `;
+                } else {
+                    html += `
+                <div class="customization-option">
+                    <label><i class="bi bi-thermometer-half"></i> Temperatura:</label>
+                    <select id="bebidaTemperatura" class="form-select">
+                        <option value="normal" selected>Normal</option>
+                        <option value="gelo">Com gelo (+ R$ 0,50)</option>
+                        <option value="sem gelo">Sem gelo</option>
+                        <option value="extra gelo">Extra gelo (+ R$ 1,00)</option>
+                    </select>
+                </div>
+                    `;
+
+                    if (isSuco) {
+                        html += `
+                <div class="customization-option">
+                    <label><i class="bi bi-lemon"></i> Acompanhamentos:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="bebidaLimao">
+                        <label class="form-check-label">Rodelas de limão (R$ 0,50)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="bebidaHortela">
+                        <label class="form-check-label">Folhas de hortelã (R$ 0,50)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="bebidaCanela">
+                        <label class="form-check-label">Canela em pau (R$ 1,00)</label>
+                    </div>
+                </div>
+                        `;
+                    }
+                }
+
+                // Só adicionar a opção de adoçar se o prato estiver na lista específica (apenas ID 40)
+                if (temOpcaoAcucar && !isRefrigerante) {
+                    html += `
+                <div class="customization-option">
+                    <label><i class="bi bi-droplet"></i> Adoçar:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bebidaAcucar" id="bebidaAcucarNormal" value="normal" checked>
+                        <label class="form-check-label">Normal (padrão)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bebidaAcucar" id="bebidaAcucarPouco" value="pouco">
+                        <label class="form-check-label">Pouco açúcar</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bebidaAcucar" id="bebidaAcucarSem" value="sem">
+                        <label class="form-check-label">Sem açúcar</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bebidaAcucar" id="bebidaAcucarAdocante" value="adocante">
+                        <label class="form-check-label">Com adoçante (+ R$ 0,50)</label>
+                    </div>
+                </div>
+                    `;
+                }
+
+                html += `
+            <div class="observation-field">
+                <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
+                <textarea id="observationText" rows="3" placeholder="Ex: Pouco gelo, sem limão, etc..."></textarea>
+            </div>
+                `;
+
+                customizeContent.innerHTML = html;
+                new bootstrap.Modal(document.getElementById('customizeModal')).show();
+                return;
+            }
+
+            // ========== CÓDIGO PARA COMIDAS ==========
+            const customizeContent = document.getElementById('customizeContent');
+            customizeContent.innerHTML = `
+        <div class="text-center mb-4">
+            <h4>${prato.nome}</h4>
+            <img src="img/${prato.id_prato}.jpg" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" alt="${prato.nome}">
+            <p class="text-secondary mt-2">${prato.descricao}</p>
+            <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
+        </div>
+        
+        <div class="pieces-selector">
+            <button class="minus" onclick="changePieces(-1)">-</button>
+            <span id="piecesCount">${currentPieces}</span>
+            <button class="plus" onclick="changePieces(1)">+</button>
+            <span class="ms-3">peça(s)</span>
+        </div>
+
+        <h6><i class="bi bi-sliders2"></i> Personalize seu pedido:</h6>
+
+        <div class="customization-option">
+            <label><i class="bi bi-plus-circle"></i> Extras:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraGergelim">
+                <label class="form-check-label">Gergelim (R$ 1,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraMolhoBranco">
+                <label class="form-check-label">Molho branco (R$ 2,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraCebolinha">
+                <label class="form-check-label">Cebolinha (R$ 1,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraCreamCheese">
+                <label class="form-check-label">Cream Cheese (R$ 3,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraShoyu">
+                <label class="form-check-label">Shoyu (R$ 1,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraTeriaki">
+                <label class="form-check-label">Teriyaki (R$ 2,00)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="extraWassabi">
+                <label class="form-check-label">Wasabi (R$ 1,00)</label>
+            </div>
+        </div>
+
+        <div class="customization-option">
+            <label><i class="bi bi-arrow-left-right"></i> Substituir proteína:</label>
+            <select id="substituteProtein" class="form-select">
+                <option value="">Nenhuma</option>
+                <option value="atum">Atum (+ R$ 5,00)</option>
+                <option value="camarao">Camarão (+ R$ 8,00)</option>
+                <option value="salmao">Salmão (+ R$ 9,00)</option>
+            </select>
+        </div>
+        
+        <div class="observation-field">
+            <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
+            <textarea id="observationText" rows="3" placeholder="Ex: Sem cebolinha, pouco shoyu, bem passado..."></textarea>
+        </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('customizeModal')).show();
+        }
+        // Função para adicionar bebida personalizada ao carrinho
+        function addCustomizedBebidaToCart() {
+            const observation = document.getElementById('observationText')?.value || '';
+            const precoUnitario = parseFloat(currentCustomizeItem.preco);
+
+            // VERIFICAR SE É REFRIGERANTE (ID 40)
+            const isRefrigerante = (currentCustomizeItem.id_prato == 39);
+            const isSuco = (currentCustomizeItem.id_categoria == 10 && currentCustomizeItem.id_prato != 39);
+
+            let personalizationText = '';
+            let adicional = 0;
+
+            if (isRefrigerante) {
+                // Para refrigerante, capturar apenas o sabor
+                const sabor = document.getElementById('bebidaSabor')?.value || 'Coca-Cola';
+                personalizationText = ` - Sabor: ${sabor}`;
+            } else {
+                // Para outras bebidas, manter as opções normais
+                const temperatura = document.getElementById('bebidaTemperatura')?.value || 'normal';
+
+                // Temperatura
+                if (temperatura === 'gelo') {
+                    adicional += 0.50;
+                    personalizationText += ', +Gelo';
+                } else if (temperatura === 'extra gelo') {
+                    adicional += 1.00;
+                    personalizationText += ', +Extra gelo';
+                } else if (temperatura === 'sem gelo') {
+                    personalizationText += ', Sem gelo';
+                }
+
+                if (isSuco) {
+                    const temLimao = document.getElementById('bebidaLimao')?.checked || false;
+                    const temHortela = document.getElementById('bebidaHortela')?.checked || false;
+                    const temCanela = document.getElementById('bebidaCanela')?.checked || false;
+
+                    if (temLimao) {
+                        adicional += 0.50;
+                        personalizationText += ', +Limão';
+                    }
+                    if (temHortela) {
+                        adicional += 0.50;
+                        personalizationText += ', +Hortelã';
+                    }
+                    if (temCanela) {
+                        adicional += 1.00;
+                        personalizationText += ', +Canela';
+                    }
+                }
+
+                // Verificar se tem opção de açúcar (apenas para ID 40)
+                const pratosComAcucar = [40];
+                const temOpcaoAcucar = pratosComAcucar.includes(currentCustomizeItem.id_prato);
+
+                let acucar = null;
+                if (temOpcaoAcucar) {
+                    acucar = document.querySelector('input[name="bebidaAcucar"]:checked')?.value || 'normal';
+
+                    if (acucar === 'pouco') {
+                        personalizationText += ', Pouco açúcar';
+                    } else if (acucar === 'sem') {
+                        personalizationText += ', Sem açúcar';
+                    } else if (acucar === 'adocante') {
+                        adicional += 0.50;
+                        personalizationText += ', +Adoçante';
+                    }
+                }
+            }
+
+            if (observation) {
+                personalizationText += ` - Obs: ${observation}`;
+            }
+
+            // Calcular preço total
+            const precoTotal = (precoUnitario * currentPieces) + adicional;
+
+            // Criar item personalizado
+            const customItem = {
+                id: currentCustomizeItem.id_prato + '_' + Date.now(),
+                nome: currentCustomizeItem.nome + personalizationText,
+                preco: precoTotal,
+                quantity: 1,
+                originalPreco: precoUnitario,
+                pieces: currentPieces,
+                tipo: 'bebida',
+                categoria: currentCustomizeItem.id_categoria,
+                ...(isRefrigerante && { sabor: document.getElementById('bebidaSabor')?.value }),
+                observation: observation,
+                adicional: adicional
+            };
+
+            cart.push(customItem);
+            saveCart();
+
+            // Feedback visual
+            const btn = document.getElementById('confirmCustomizeBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado!';
+            btn.style.backgroundColor = '#28a745';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.backgroundColor = '#e63946';
+            }, 1500);
+
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('customizeModal')).hide();
+            }, 500);
+        }
+
+
+        // Função para alterar quantidade de peças
+        function changePieces(delta) {
+            currentPieces += delta;
+            if (currentPieces < 1) currentPieces = 1;
+            if (currentPieces > 50) currentPieces = 50;
+            document.getElementById('piecesCount').innerText = currentPieces;
+        }
+
+        // Função para adicionar item personalizado ao carrinho
+        function addCustomizedToCart() {
+            const observation = document.getElementById('observationText')?.value || '';
+            const precoUnitario = parseFloat(currentCustomizeItem.preco);
+
+            // Capturar os valores das novas opções de personalização
+            const extraGergelim = document.getElementById('extraGergelim')?.checked || false;
+            const extraMolhoBranco = document.getElementById('extraMolhoBranco')?.checked || false;
+            const extraCebolinha = document.getElementById('extraCebolinha')?.checked || false;
+            const extraCreamCheese = document.getElementById('extraCreamCheese')?.checked || false;
+            const extraShoyu = document.getElementById('extraShoyu')?.checked || false;
+            const extraTeriaki = document.getElementById('extraTeriaki')?.checked || false;
+            const extraWassabi = document.getElementById('extraWassabi')?.checked || false;
+            const substitute = document.getElementById('substituteProtein')?.value || '';
+
+            // Calcular adicionais
+            let adicional = 0;
+            let extrasTexto = '';
+
+            if (extraGergelim) {
+                adicional += 1.00;
+                extrasTexto += ', +Gergelim';
+            }
+            if (extraMolhoBranco) {
+                adicional += 2.00;
+                extrasTexto += ', +MolhoBranco';
+            }
+            if (extraCebolinha) {
+                adicional += 1.00;
+                extrasTexto += ', +Cebolinha';
+            }
+            if (extraCreamCheese) {
+                adicional += 3.00;
+                extrasTexto += ', +CreamCheese';
+            }
+            if (extraShoyu) {
+                adicional += 1.00;
+                extrasTexto += ', +Shoyu';
+            }
+            if (extraTeriaki) {
+                adicional += 2.00;
+                extrasTexto += ', +Teriaki';
+            }
+            if (extraWassabi) {
+                adicional += 1.00;
+                extrasTexto += ', +Wassabi';
+            }
+
+            let substituicaoTexto = '';
+            let substituicaoCusto = 0;
+            if (substitute === 'atum') {
+                substituicaoCusto = 5.00;
+                substituicaoTexto = ', Troca: Atum';
+            } else if (substitute === 'camarao') {
+                substituicaoCusto = 8.00;
+                substituicaoTexto = ', Troca: Camarão';
+            } else if (substitute === 'salmao') {
+                substituicaoCusto = 9.00;
+                substituicaoTexto = ', Troca: Salmão';
+            }
+            adicional += substituicaoCusto;
+
+            // Calcular preço total com adicionais
+            const precoTotal = (precoUnitario * currentPieces) + adicional;
+
+            let personalizationText = '';
+            if (extrasTexto) {
+                personalizationText += extrasTexto;
+            }
+            if (substituicaoTexto) {
+                personalizationText += substituicaoTexto;
+            }
+            if (observation) {
+                personalizationText += ` - Obs: ${observation}`;
+            }
+
+            // Criar item personalizado
+            const customItem = {
+                id: currentCustomizeItem.id_prato + '_' + Date.now(), // ID único para cada personalização
+                nome: currentCustomizeItem.nome + personalizationText,
+                preco: precoTotal,
+                quantity: 1,
+                originalPreco: precoUnitario,
+                pieces: currentPieces,
+                extraGergelim: extraGergelim,
+                extraMolhoBranco: extraMolhoBranco,
+                extraCebolinha: extraCebolinha,
+                extraCreamCheese: extraCreamCheese,
+                extraShoyu: extraShoyu,
+                extraTeriaki: extraTeriaki,
+                extraWassabi: extraWassabi,
+                substitute: substitute,
+                observation: observation,
+                adicional: adicional
+            };
+
+            cart.push(customItem);
+            saveCart();
+
+            // Feedback visual
+            const btn = document.getElementById('confirmCustomizeBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado!';
+            btn.style.backgroundColor = '#28a745';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.backgroundColor = '#e63946';
+            }, 1500);
+
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('customizeModal')).hide();
+            }, 500);
         }
 
         // Função para adicionar item ao carrinho
@@ -834,14 +1494,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <small class="text-secondary">R$ ${item.preco.toFixed(2)}</small>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity(${item.id}, -1)">
+                            <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity('${item.id}', -1)">
                                 <i class="bi bi-dash"></i>
                             </button>
                             <span class="mx-2">${item.quantity}</span>
-                            <button class="btn btn-sm btn-outline-success" onclick="updateQuantity(${item.id}, 1)">
+                            <button class="btn btn-sm btn-outline-success" onclick="updateQuantity('${item.id}', 1)">
                                 <i class="bi bi-plus"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart(${item.id})">
+                            <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${item.id}')">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -929,6 +1589,107 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('selectedPayment').value = payment;
         }
 
+        // Salvar pedido no localStorage do usuário
+        function salvarPedidoHistorico(pedido) {
+            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+            if (usuarioId) {
+                let historico = JSON.parse(localStorage.getItem(`pedidos_${usuarioId}`)) || [];
+                pedido.id = Date.now();
+                pedido.data = new Date().toLocaleString();
+                historico.push(pedido);
+                localStorage.setItem(`pedidos_${usuarioId}`, JSON.stringify(historico));
+            }
+        }
+
+        // Carregar histórico de pedidos
+        function carregarHistoricoPedidos() {
+            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+            if (usuarioId) {
+                const historico = JSON.parse(localStorage.getItem(`pedidos_${usuarioId}`)) || [];
+                const pedidosContent = document.getElementById('pedidosContent');
+
+                if (historico.length === 0) {
+                    pedidosContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 50px;"></i>
+                    <p class="mt-3">Nenhum pedido encontrado.</p>
+                </div>
+            `;
+                } else {
+                    let html = '<div class="list-group">';
+                    historico.reverse().forEach(pedido => {
+                        html += `
+                    <div class="list-group-item bg-dark text-white border-secondary mb-2">
+                        <div class="d-flex justify-content-between">
+                            <strong>Pedido #${pedido.id}</strong>
+                            <small>${pedido.data}</small>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Total:</strong> R$ ${pedido.total.toFixed(2)}
+                        </div>
+                        <div class="mt-2">
+                            <strong>Forma de Pagamento:</strong> ${pedido.pagamento}
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger mt-2" onclick="alert('Repetir pedido #${pedido.id}')">
+                            <i class="bi bi-arrow-repeat"></i> Pedir Novamente
+                        </button>
+                    </div>
+                `;
+                    });
+                    html += '</div>';
+                    pedidosContent.innerHTML = html;
+                }
+            }
+        }
+
+        // Adicionar evento aos botões "Adicionar"
+        document.querySelectorAll('.btn-order').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation(); // Evitar propagação para o card
+                const card = btn.closest('.card-sushi');
+                const nome = card.querySelector('h5').innerText;
+                const precoText = card.querySelector('.price-tag').innerText;
+                const preco = parseFloat(precoText.replace('R$ ', '').replace(',', '.'));
+
+                // Gerar ID único baseado no nome (simplificado)
+                const id = nome.hashCode ? nome.hashCode() : Math.random();
+
+                // Para bebidas (categorias 10 e 11) adicionar direto
+                const isBebida = card.closest('#bebidas') !== null || card.closest('#alcoolicas') !== null;
+
+                if (isBebida) {
+                    addToCart({
+                        id: id,
+                        nome: nome,
+                        preco: preco
+                    });
+                } else {
+
+                }
+            });
+        });
+
+        // Função para abrir o modal do carrinho
+        document.querySelector('.nav-icons .position-relative').addEventListener('click', function (e) {
+            e.preventDefault();
+            displayCart();
+            new bootstrap.Modal(document.getElementById('cartModal')).show();
+        });
+
+        const confirmBtn = document.getElementById('confirmCustomizeBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function () {
+                // Verificar se é bebida
+                const isBebida = (currentCustomizeItem && (currentCustomizeItem.id_categoria == 10 || currentCustomizeItem.id_categoria == 11));
+
+                if (isBebida) {
+                    addCustomizedBebidaToCart();
+                } else {
+                    addCustomizedToCart();
+                }
+            });
+        }
+
         // Função para confirmar pedido
         function confirmarPedido() {
             if (!selectedPayment) {
@@ -963,6 +1724,20 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             mensagem += `\n*Total:* R$ ${finalTotal.toFixed(2)}`;
             mensagem += `\n*Forma de Pagamento:* ${selectedPayment}`;
 
+            // Salvar pedido no histórico do usuário (se estiver logado)
+            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+            if (usuarioId) {
+                const pedido = {
+                    itens: cart.map(item => ({ nome: item.nome, quantidade: item.quantity, preco: item.preco })),
+                    subtotal: total,
+                    desconto: desconto,
+                    total: finalTotal,
+                    pagamento: selectedPayment,
+                    data: new Date().toLocaleString()
+                };
+                salvarPedidoHistorico(pedido);
+            }
+
             // Simular envio do pedido (aqui você pode enviar para WhatsApp, API, etc)
             alert(`Pedido confirmado!\n\n${mensagem}\n\nObrigado pela preferência!`);
 
@@ -977,31 +1752,16 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             displayCart();
         }
 
-        // Adicionar evento aos botões "Adicionar"
-        document.querySelectorAll('.btn-order').forEach(btn => {
-            const card = btn.closest('.card-sushi');
-            const nome = card.querySelector('h5').innerText;
-            const precoText = card.querySelector('.price-tag').innerText;
-            const preco = parseFloat(precoText.replace('R$ ', '').replace(',', '.'));
-
-            // Gerar ID único baseado no nome (simplificado)
-            const id = nome.hashCode ? nome.hashCode() : Math.random();
-
-            btn.addEventListener('click', function () {
-                addToCart({
-                    id: id,
-                    nome: nome,
-                    preco: preco
-                });
-            });
-        });
-
-        // Função para abrir o modal do carrinho
-        document.querySelector('.nav-icons .position-relative').addEventListener('click', function (e) {
-            e.preventDefault();
-            displayCart();
-            new bootstrap.Modal(document.getElementById('cartModal')).show();
-        });
+        // Salvar pedido no localStorage do usuário
+        function salvarPedidoHistorico(pedido) {
+            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+            if (usuarioId) {
+                let historico = JSON.parse(localStorage.getItem(`pedidos_${usuarioId}`)) || [];
+                pedido.id = Date.now();
+                historico.push(pedido);
+                localStorage.setItem(`pedidos_${usuarioId}`, JSON.stringify(historico));
+            }
+        }
 
         // Inicializar contador do carrinho
         updateCartCount();
@@ -1015,6 +1775,17 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             return hash;
         };
+
+        // Tornar funções globais para acesso no HTML
+        window.changePieces = changePieces;
+        window.openCustomizeModal = openCustomizeModal;
+        window.addToCart = addToCart;
+        window.removeFromCart = removeFromCart;
+        window.updateQuantity = updateQuantity;
+        window.clearCart = clearCart;
+        window.finalizarPedido = finalizarPedido;
+        window.selectPayment = selectPayment;
+        window.confirmarPedido = confirmarPedido;
     </script>
 </body>
 
