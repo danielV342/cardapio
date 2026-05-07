@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Tempo de geração: 17/03/2026 às 15:05
+-- Host: 127.0.0.1:3307
+-- Tempo de geração: 07/05/2026 às 03:26
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -38,12 +38,17 @@ CREATE TABLE `categoria` (
 
 INSERT INTO `categoria` (`id_categoria`, `nome_categoria`) VALUES
 (1, 'Entradas'),
-(2, 'Sashimis'),
-(3, 'Sushis e Niguiris'),
-(4, 'Rolls & Especiais'),
-(5, 'Experiência Wabi Sabi'),
-(6, 'Pratos Quentes'),
-(7, 'Bebidas');
+(2, 'Sushis Tradicionais'),
+(3, 'Hossomaki'),
+(4, 'Uramaki'),
+(5, 'Sashimis'),
+(6, 'Temakis'),
+(7, 'Hot Rolls'),
+(8, 'Pratos Renomados'),
+(9, 'Supremos'),
+(10, 'Sem álcool'),
+(11, 'Alcoólicas'),
+(12, 'Combinados');
 
 -- --------------------------------------------------------
 
@@ -65,22 +70,81 @@ CREATE TABLE `pratos` (
 --
 
 INSERT INTO `pratos` (`id_prato`, `nome`, `descricao`, `id_categoria`, `quantidade`, `preco`) VALUES
-(1, 'samuwl', 'Pepino japonês laminado marinado em molho agridoce artesanal, finalizado com gergelim tostado.', 1, 'Porção individual', 24),
-(2, 'Sunomono Especial', 'Pepino japonês, kani selecionado e camarões levemente cozidos em marinada cítrica equilibrada.', 1, 'Porção individual', 38),
-(3, 'Missoshiru Tradicional', 'Caldo leve à base de missô, tofu delicado, cebolinha fresca e alga wakame.', 1, '300ml', 22),
-(4, 'Shimeji na Manteiga', 'Cogumelos frescos salteados lentamente na manteiga e shoyu especial.', 1, 'Porção individual', 42),
-(5, 'Sashimi de Salmão', 'Cortes frescos de salmão selecionado diariamente.', 2, '8 unidades', 68),
-(6, 'Sashimi de Atum', 'Atum fresco com corte preciso e sabor marcante.', 2, '8 unidades', 79),
-(7, 'Sashimi Peixe Branco', 'Peixe branco fresco conforme sazonalidade.', 2, '8 unidades', 72),
-(8, 'Niguiri de Salmão', 'Salmão fresco sobre arroz temperado artesanalmente.', 3, '2 unidades', 28),
-(9, 'Niguiri de Atum', 'Atum selecionado sobre arroz moldado à mão.', 3, '2 unidades', 32),
-(10, 'Joe de Salmão', 'Arroz envolto em salmão e finalizado com cream cheese.', 3, '2 unidades', 34),
-(11, 'Philadelphia Especial', 'Salmão fresco e cream cheese com acabamento delicado.', 4, '8 unidades', 64),
-(12, 'Hot Roll da Casa', 'Salmão e cream cheese empanados e fritos levemente.', 4, '8 unidades', 58),
-(13, 'Uramaki Especial Wabi Sabi', 'Combinação exclusiva da casa equilibrando textura e frescor.', 4, '8 unidades', 72),
-(14, 'Seleção do Itamae', 'Seleção especial do chef com cortes variados e frescos.', 5, '20 peças', 129),
-(15, 'Seleção Especial', 'Variedade refinada ideal para compartilhar.', 5, '30 peças', 189),
-(16, 'Degustação Wabi Sabi', 'Experiência completa com destaques da casa.', 5, '50 peças', 299);
+(1, 'Sunomono', 'Pepino, molho agridoce e gergelim', 1, 'Porção individual', 16),
+(2, 'Edamame', 'Vagem de soja cozida e sal', 1, 'Porção individual', 14),
+(3, 'Guioza', 'Massa oriental, recheio de carne ou frango e temperos', 1, '6 un', 22),
+(4, 'Harumaki', 'Massa crocante, recheio de legumes, queijo ou camarão', 1, '6 un', 22),
+(5, 'Shimeji na Manteiga', 'Cogumelos frescos salteados lentamente na manteiga e shoyu especial.', 1, 'Porção individual', 24),
+(6, 'Nigiri de Salmão', 'Arroz japonês e fatia de salmão por cima', 2, '6 un', 18),
+(7, 'Nigiri de Atum', 'Arroz japonês e fatia de atum por cima', 2, '6 un', 18),
+(8, 'Joy Salmão', 'Arroz japonês e cream chease envolto de salmão fresco', 2, '8 un', 22),
+(9, 'Gunkan Salmão', 'Arroz japonês e salmão cremoso envolto da alga nori', 2, '8 un', 20),
+(10, 'Hossomaki de Salmão', 'Alga nori, arroz japonês e salmão', 3, '6 un', 28),
+(11, 'Hossomaki de kani', 'Alga nori, arroz japonês e kani', 3, '6 un', 26),
+(12, 'Hossomaki de Pepino', 'Alga nori, arroz japonês e pepino', 3, '6 un', 22),
+(13, 'Uramaki de Salmão', 'Arroz por fora, alga nori por dentro e salmao', 4, '8 un', 32),
+(14, 'Uramaki de Camarão', 'Arroz por fora, alga nori por dentro e camarão', 4, '8 un', 34),
+(15, 'Uramaki de Kani', 'Arroz por fora, alga nori por dentro e kani', 4, '8 un', 30),
+(16, 'Philadelphia', 'Arroz por fora, alga nori por dentro, salmão e cream chease', 4, '8 un', 38),
+(17, 'Skin', 'Arroz por fora, alga nori por dentro, skin crocante e cream chease', 4, '8 un', 34),
+(18, 'Sashimi de salmão', 'Fatias de salmão cru', 5, '5 uni', 32),
+(19, 'Sashimi de atum', 'Fatias de atum cru', 5, '5 uni', 34),
+(20, 'Sashimi misto', '3 fatias de salmão cru, 3 fatias de atum cru e 3 fatias de peixe branco cru', 5, '9 uni', 48),
+(21, 'Temaki de salmão', 'Alga nori, arroz japonês e cubos de salmão', 6, '1 uni', 22),
+(22, 'Temaki de salmão cream cheese', 'Alga nori, arroz japonês, salmão e cream cheese', 6, '1 uni', 24),
+(23, 'Temaki de camarão', 'Alga nori, arroz japonês e camarão', 6, '1 uni', 24),
+(24, 'Temaki de kani', 'Alga nori, arroz japonês, kani e cream cheese', 6, '1 uni', 22),
+(25, 'Temaki skin', 'Alga nori, arroz japonês , skin crocante e cream cheese', 6, '1 uni', 24),
+(26, 'Temaki califórnia', 'Alga nori, arroz japonês, manga, pepino e kani', 6, '1 uni', 22),
+(27, 'Hot roll salmão', 'Alga nori, arroz japonês e salmão, empanado na farinha panko e frito no óleo', 7, '8 uni', 32),
+(28, 'Hot roll camarão', 'Arroz japonês, alga nori e camarão, empanado na farinha panko e frito no óleo', 7, '8 uni', 34),
+(29, 'Hot roll kani', 'Arroz japonês, alga nori e kani, empanado na farinha panko e frito no óleo', 7, '8 uni', 32),
+(30, 'Teppan de salmão', 'Salmão grelhado, legumes e molho especial', 8, 'Porção individual', 52),
+(31, 'Teppan de camarão', 'Camarão grelhado, legumes e molho especial', 8, 'Porção individual', 54),
+(32, 'Yakissoba', 'Macarrão oriental, legumes e proteína à escolha', 8, 'Porção individual', 38),
+(33, 'Mega supremo 1,5kg', 'Manta de salmão maçaricado recheada com pasta de kani, mix de peixes fritos, cream cheese, arroz, camarão empanado, regado ao molho teriyaki, gergelim e cebolinha.', 9, '1,5 kg', 89),
+(34, 'Mega supremo 700g', 'Manta de salmão maçaricado recheada com pasta de kani, mix de peixes fritos, cream cheese, arroz, camarão empanado, regado ao molho teriyaki, gergelim e cebolinha.', 9, '700g', 63),
+(35, 'Super Ebi 1,5kg', 'Manta de salmão maçaricado recheada com camarão empanado, cream cheese, arroz japonês e cebolinha, regado ao molho teriyaki.', 9, '1,5kg', 89),
+(36, 'Super Ebi 700g', 'Manta de salmão maçaricado recheado com camarão empanado, cream cheese, arroz e cebolinha, regado ao molho teriyaki e gergelim.', 9, '700g', 63),
+(37, 'Água mineral', 'Água sem gás', 10, '500ml', 4.5),
+(38, 'Água gaseificada', 'Água com gás', 10, '500ml', 5),
+(39, 'Refrigerantes Lata', 'Coca-cola; Guaraná; Antarctica; Fanta; Schweppes; Pepsi', 10, '350ml', 9),
+(40, 'Sucos naturais', 'Maracujá; Limão; Laranja; Abacaxi; Acerola; Goiaba; Manga', 10, '350ml', 7),
+(41, 'H2O', 'Limão ou Limoneto', 10, '500ml', 9),
+(42, 'Saquê tradicional', 'Bebida japonesa de arroz fermentado', 11, '750ml', 24),
+(43, 'Saquê Importado', 'Saquê premium japonês importado', 11, '750ml', 38),
+(44, 'Heineken', 'Cerveja long neck', 11, '330ml', 12),
+(45, 'Vinho branco', 'vinho reservado Sauvignon Blanc', 11, '750ml', 36),
+(46, 'Vinho Rosé', 'Vinho reservado Sweet Rosé suave', 11, '750ml', 36),
+(47, 'Sake Bomb Drink', 'Saquê, limão, xarope de gengibre e gelo', 11, '250ml', 26),
+(48, 'Yuzu Spritz drink', 'Licor yuzu, espumante e fatia de limão', 11, '250ml', 28),
+(49, 'Monte os seu - 20 peças', '5 uramaki + 5 hossomaki + 5 nigiris + 5 hot rolls', 12, '20 peças', 43),
+(50, 'Monte o seu - 30 peças', '10 uramaki + 10 hot rolls + 5 nigiris + 5 hossomaki', 12, '30 peças', 54),
+(51, 'Monte o seu - 40 peças + 1 Temaki', '10 Uramaki + 10 Hot Roll + 10 Hossomaki + 5 Joy + 5 Gunkan + 1 Temaki', 12, '40 peças', 75),
+(52, 'Monte o seu - 50 peças + 2 Temakis', '10 Uramaki + 10 Hot Roll + 10 Hossomaki + 10 Philadelphia + 5 Joy + 5 Nigiri + 2 Temakis', 12, '50 peças', 115);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id_usuario` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `endereco` text DEFAULT NULL,
+  `senha` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `usuarios`
+--
+
+INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `telefone`, `endereco`, `senha`) VALUES
+(1, 'Nivea Evelyn', '17242161@esuda.edu.br', '81999999999', 'Rua amarela, 204', '$2y$10$rNs2Wl.Ntr5NmcPb0YLKeuyMVQfXJVYcyGHfuf3cV5FjNurEjNkVe'),
+(2, 'Daniel', '12345678@gmail.com', '81999999999', 'rua quatro, 8', '$2y$10$KLxadYzjYmZybtK8hzdHx.Di3PLnvzZkdu9JkqnPw9dKaOc60ggQm');
 
 --
 -- Índices para tabelas despejadas
@@ -100,6 +164,13 @@ ALTER TABLE `pratos`
   ADD KEY `fk_pratos_categoria` (`id_categoria`);
 
 --
+-- Índices de tabela `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -107,13 +178,19 @@ ALTER TABLE `pratos`
 -- AUTO_INCREMENT de tabela `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `pratos`
 --
 ALTER TABLE `pratos`
   MODIFY `id_prato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+
+--
+-- AUTO_INCREMENT de tabela `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
