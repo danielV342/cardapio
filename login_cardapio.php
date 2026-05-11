@@ -2,21 +2,29 @@
 session_start();
 include "conexao.php";
 
-// Processar login
+// Se já estiver logado como cliente, redirecionar para o cardápio
+if (isset($_SESSION['usuario_id'])) {
+    header("Location: cardapio.php");
+    exit();
+}
+
+// Processar login do cliente
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
     if ($_POST['acao'] == 'login') {
         $email = $_POST['email'];
         $senha = $_POST['senha'];
-        
+
         $sql = "SELECT * FROM usuarios WHERE email = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$email]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($usuario && password_verify($senha, $usuario['senha'])) {
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
             $_SESSION['usuario_nome'] = $usuario['nome'];
             $_SESSION['usuario_email'] = $usuario['email'];
+            
+            // Cliente sempre vai para o cardápio
             header("Location: cardapio.php");
             exit();
         } else {
@@ -28,24 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
         $telefone = $_POST['telefone'];
         $endereco = $_POST['endereco'];
         $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-        
+
         $sql = "INSERT INTO usuarios (nome, email, telefone, endereco, senha) VALUES (?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        
+
         try {
             $stmt->execute([$nome, $email, $telefone, $endereco, $senha]);
             $sucesso = "Cadastro realizado com sucesso! Faça login.";
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             $erro = "Email já cadastrado!";
         }
     }
-}
-
-// Processar logout
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: cardapio.php");
-    exit();
 }
 ?>
 
@@ -111,6 +112,18 @@ if (isset($_GET['logout'])) {
             color: white;
             border: none;
         }
+        .acesso-cozinha {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .acesso-cozinha a {
+            color: #e63946;
+            text-decoration: none;
+        }
+        .acesso-cozinha a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +131,7 @@ if (isset($_GET['logout'])) {
         <div class="card">
             <div class="card-header">
                 <h3><i class="bi bi-person-circle"></i> Sushi Wabi-Sabi</h3>
-                <p>Faça login ou crie sua conta</p>
+                <p>Faça login ou crie sua conta para fazer pedidos</p>
             </div>
             <div class="card-body p-4">
                 <?php if (isset($erro)): ?>
@@ -183,6 +196,14 @@ if (isset($_GET['logout'])) {
                             <button type="submit" class="btn btn-login">Cadastrar</button>
                         </form>
                     </div>
+                </div>
+                
+                <!-- Link para acesso da cozinha -->
+                <div class="acesso-cozinha">
+                    <small>
+                        <i class="bi bi-egg-fried"></i> 
+                        <a href="login_cozinha.php">Acesso para a Cozinha</a>
+                    </small>
                 </div>
             </div>
         </div>

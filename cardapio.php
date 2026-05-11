@@ -1515,14 +1515,17 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
+        // Função para confirmar pedido (versão que envia para cozinha)
         function confirmarPedido() {
             if (!selectedPayment) {
                 alert('Por favor, selecione uma forma de pagamento!');
                 return;
             }
+
             const total = calculateTotal();
             let finalTotal = total;
             let desconto = 0;
+
             if (selectedPayment === 'Dinheiro') {
                 desconto = total * 0.1;
                 finalTotal = total - desconto;
@@ -1530,32 +1533,74 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 desconto = total * 0.05;
                 finalTotal = total - desconto;
             }
-            let mensagem = `**NOVO PEDIDO - WABI-SABI**\n\n`;
-            mensagem += `*Itens do pedido:*\n`;
-            cart.forEach(item => {
-                mensagem += `• ${item.quantity}x ${item.nome} - R$ ${(item.preco * item.quantity).toFixed(2)}\n`;
-            });
-            mensagem += `\n*Subtotal:* R$ ${total.toFixed(2)}`;
-            if (desconto > 0) mensagem += `\n*Desconto:* -R$ ${desconto.toFixed(2)}`;
-            mensagem += `\n*Total:* R$ ${finalTotal.toFixed(2)}`;
-            mensagem += `\n*Forma de Pagamento:* ${selectedPayment}`;
 
-            const usuarioId = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
-            if (usuarioId) {
-                const pedido = {
-                    itens: cart.map(item => ({ nome: item.nome, quantidade: item.quantity, preco: item.preco })),
-                    subtotal: total,
-                    desconto: desconto,
-                    total: finalTotal,
-                    pagamento: selectedPayment
-                };
-                salvarPedidoHistorico(pedido);
+            // Capturar observações (se tiver campo)
+            const observacoes = document.getElementById('observacaoPedido')?.value || '';
+
+            // Preparar dados para enviar
+            const pedidoData = {
+                itens: cart.map(item => ({
+                    nome: item.nome,
+                    quantidade: item.quantity,
+                    preco: item.preco * item.quantity
+                })),
+                subtotal: total,
+                desconto: desconto,
+                total: finalTotal,
+                pagamento: selectedPayment,
+                observacoes: observacoes
+            };
+
+            // Mostrar loading
+            const btnConfirmar = event?.target;
+            if (btnConfirmar) {
+                btnConfirmar.disabled = true;
+                btnConfirmar.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
             }
-            alert(`Pedido confirmado!\n\n${mensagem}\n\nObrigado pela preferência!`);
-            cart = [];
-            saveCart();
-            bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
-            displayCart();
+
+            // Enviar pedido para a API
+            fetch('api_pedidos.php?action=salvar_pedido', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pedidoData)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        let mensagem = `✅ PEDIDO ENVIADO PARA COZINHA!\n\n`;
+                        mensagem += `Número do Pedido: ${result.numero_pedido}\n\n`;
+                        mensagem += `Itens do pedido:\n`;
+                        cart.forEach(item => {
+                            mensagem += `• ${item.quantity}x ${item.nome} - R$ ${(item.preco * item.quantity).toFixed(2)}\n`;
+                        });
+                        mensagem += `\nSubtotal: R$ ${total.toFixed(2)}`;
+                        if (desconto > 0) mensagem += `\nDesconto: -R$ ${desconto.toFixed(2)}`;
+                        mensagem += `\nTotal: R$ ${finalTotal.toFixed(2)}`;
+                        mensagem += `\nForma de Pagamento: ${selectedPayment}`;
+
+                        alert(mensagem);
+
+                        // Limpar carrinho
+                        cart = [];
+                        saveCart();
+
+                        // Fechar modais
+                        bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+                        displayCart();
+                    } else {
+                        alert('Erro ao enviar pedido: ' + (result.error || 'Tente novamente'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao conectar com o servidor. Tente novamente.');
+                })
+                .finally(() => {
+                    if (btnConfirmar) {
+                        btnConfirmar.disabled = false;
+                        btnConfirmar.innerHTML = 'Confirmar Pedido';
+                    }
+                });
         }
 
         // Eventos
