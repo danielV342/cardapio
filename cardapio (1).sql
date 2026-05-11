@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 07/05/2026 às 03:26
+-- Tempo de geração: 11/05/2026 às 20:46
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -49,6 +49,57 @@ INSERT INTO `categoria` (`id_categoria`, `nome_categoria`) VALUES
 (10, 'Sem álcool'),
 (11, 'Alcoólicas'),
 (12, 'Combinados');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `funcionarios`
+--
+
+CREATE TABLE `funcionarios` (
+  `id_funcionario` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `cargo` varchar(50) DEFAULT 'cozinheiro',
+  `senha` varchar(255) NOT NULL,
+  `ativo` tinyint(4) DEFAULT 1,
+  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `pedidos`
+--
+
+CREATE TABLE `pedidos` (
+  `id_pedido` int(11) NOT NULL,
+  `id_usuario` int(11) DEFAULT NULL,
+  `numero_pedido` varchar(20) NOT NULL,
+  `itens` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`itens`)),
+  `subtotal` decimal(10,2) NOT NULL,
+  `desconto` decimal(10,2) DEFAULT 0.00,
+  `total` decimal(10,2) NOT NULL,
+  `forma_pagamento` varchar(50) DEFAULT NULL,
+  `status` varchar(30) DEFAULT 'pendente',
+  `observacoes` text DEFAULT NULL,
+  `data_pedido` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `pedido_status_log`
+--
+
+CREATE TABLE `pedido_status_log` (
+  `id_log` int(11) NOT NULL,
+  `id_pedido` int(11) DEFAULT NULL,
+  `status_anterior` varchar(30) DEFAULT NULL,
+  `status_novo` varchar(30) DEFAULT NULL,
+  `alterado_por` varchar(100) DEFAULT NULL,
+  `data_alteracao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -135,16 +186,9 @@ CREATE TABLE `usuarios` (
   `email` varchar(100) NOT NULL,
   `telefone` varchar(20) DEFAULT NULL,
   `endereco` text DEFAULT NULL,
-  `senha` varchar(255) NOT NULL
+  `senha` varchar(255) NOT NULL,
+  `cargo` varchar(30) DEFAULT 'cliente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `usuarios`
---
-
-INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `telefone`, `endereco`, `senha`) VALUES
-(1, 'Nivea Evelyn', '17242161@esuda.edu.br', '81999999999', 'Rua amarela, 204', '$2y$10$rNs2Wl.Ntr5NmcPb0YLKeuyMVQfXJVYcyGHfuf3cV5FjNurEjNkVe'),
-(2, 'Daniel', '12345678@gmail.com', '81999999999', 'rua quatro, 8', '$2y$10$KLxadYzjYmZybtK8hzdHx.Di3PLnvzZkdu9JkqnPw9dKaOc60ggQm');
 
 --
 -- Índices para tabelas despejadas
@@ -155,6 +199,28 @@ INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `telefone`, `endereco`, `
 --
 ALTER TABLE `categoria`
   ADD PRIMARY KEY (`id_categoria`);
+
+--
+-- Índices de tabela `funcionarios`
+--
+ALTER TABLE `funcionarios`
+  ADD PRIMARY KEY (`id_funcionario`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices de tabela `pedidos`
+--
+ALTER TABLE `pedidos`
+  ADD PRIMARY KEY (`id_pedido`),
+  ADD UNIQUE KEY `numero_pedido` (`numero_pedido`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Índices de tabela `pedido_status_log`
+--
+ALTER TABLE `pedido_status_log`
+  ADD PRIMARY KEY (`id_log`),
+  ADD KEY `id_pedido` (`id_pedido`);
 
 --
 -- Índices de tabela `pratos`
@@ -181,6 +247,24 @@ ALTER TABLE `categoria`
   MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT de tabela `funcionarios`
+--
+ALTER TABLE `funcionarios`
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `pedidos`
+--
+ALTER TABLE `pedidos`
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `pedido_status_log`
+--
+ALTER TABLE `pedido_status_log`
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de tabela `pratos`
 --
 ALTER TABLE `pratos`
@@ -190,7 +274,23 @@ ALTER TABLE `pratos`
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `pedidos`
+--
+ALTER TABLE `pedidos`
+  ADD CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+
+--
+-- Restrições para tabelas `pedido_status_log`
+--
+ALTER TABLE `pedido_status_log`
+  ADD CONSTRAINT `pedido_status_log_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id_pedido`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
