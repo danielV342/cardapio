@@ -55,7 +55,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             color: #e63946;
         }
 
-        /* Status dos pedidos */
         .status-badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -83,7 +82,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             color: white;
         }
 
-        /* Cards de pedidos */
         .pedido-card {
             background: #1a1a1a;
             border: 1px solid #333;
@@ -145,7 +143,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             font-size: 0.8rem;
         }
 
-        /* Tabs */
         .nav-tabs {
             border-bottom: 1px solid #333;
         }
@@ -167,7 +164,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             border-bottom: 2px solid #e63946;
         }
 
-        /* Sons de notificação */
         @keyframes pulse {
 
             0%,
@@ -184,7 +180,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             animation: pulse 0.5s ease-in-out;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -198,7 +193,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             border-radius: 4px;
         }
 
-        /* Badge contador */
         .badge-count {
             background-color: #e63946;
             color: white;
@@ -208,7 +202,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             margin-left: 5px;
         }
 
-        /* Modal de detalhes */
         .modal-content {
             background-color: #1a1a1a;
             border: 1px solid #333;
@@ -247,6 +240,13 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
                         </span>
                     <?php endif; ?>
                 </span>
+
+                <?php if ($_SESSION['funcionario_cargo'] == 'chef'): ?>
+                    <a href="cadastrar_funcionario.php" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-person-plus"></i> Novo Funcionário
+                    </a>
+                <?php endif; ?>
+
                 <a href="cardapio.php" class="btn btn-outline-light btn-sm">
                     <i class="bi bi-arrow-left"></i> Voltar ao Cardápio
                 </a>
@@ -258,7 +258,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
     </nav>
 
     <div class="container mt-4">
-        <!-- Tabs de navegação -->
         <ul class="nav nav-tabs mb-4" id="pedidosTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="ativos-tab" data-bs-toggle="tab" data-bs-target="#ativos"
@@ -275,9 +274,7 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             </li>
         </ul>
 
-        <!-- Conteúdo das tabs -->
         <div class="tab-content" id="pedidosTabContent">
-            <!-- Pedidos Ativos -->
             <div class="tab-pane fade show active" id="ativos" role="tabpanel">
                 <div class="row g-4" id="pedidosAtivosContainer">
                     <div class="col-12 text-center py-5">
@@ -288,7 +285,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
                 </div>
             </div>
 
-            <!-- Histórico -->
             <div class="tab-pane fade" id="historico" role="tabpanel">
                 <div class="row g-4" id="historicoContainer">
                     <div class="col-12 text-center py-5">
@@ -301,7 +297,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
         </div>
     </div>
 
-    <!-- Modal de Detalhes do Pedido -->
     <div class="modal fade" id="detalhesModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -350,7 +345,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Renderizar status badge
         function getStatusBadge(status) {
             const statusMap = {
                 'pendente': 'status-pendente',
@@ -367,7 +361,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             return `<span class="status-badge ${statusMap[status] || 'status-pendente'}">${textMap[status] || status}</span>`;
         }
 
-        // Renderizar um card de pedido
         function renderPedidoCard(pedido, isHistorico = false) {
             const itens = pedido.itens || [];
             const hora = formatarData(pedido.data_pedido);
@@ -445,7 +438,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             return html;
         }
 
-        // Carregar pedidos ativos
         async function carregarPedidosAtivos() {
             try {
                 const response = await fetch('api_pedidos.php?action=pedidos_pendentes');
@@ -468,7 +460,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
                 // Verificar novos pedidos
                 const novosIds = pedidos.map(p => p.id_pedido);
                 if (ultimoPedidoId && !novosIds.includes(ultimoPedidoId)) {
-                    // Tem novo pedido
                     playNotificationSound();
                 }
                 ultimoPedidoId = novosIds[0];
@@ -485,7 +476,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             }
         }
 
-        // Carregar histórico
         async function carregarHistorico() {
             try {
                 const response = await fetch('api_pedidos.php?action=historico_pedidos');
@@ -514,7 +504,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             }
         }
 
-        // Ver detalhes do pedido
         async function verDetalhes(idPedido) {
             try {
                 const response = await fetch(`api_pedidos.php?action=buscar_pedido&id=${idPedido}`);
@@ -625,7 +614,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
             }
         }, 10000);
 
-        // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
             carregarPedidosAtivos();
             carregarHistorico();

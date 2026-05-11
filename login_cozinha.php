@@ -157,13 +157,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 <hr class="border-secondary my-3">
                 
-                <div class="text-center">
+                <!-- <div class="text-center">
                     <small>
                         <a href="login.php" class="text-decoration-none">
                             <i class="bi bi-arrow-left"></i> Área do Cliente
                         </a>
                     </small>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
