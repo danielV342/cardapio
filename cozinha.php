@@ -247,9 +247,6 @@ if (!isset($_SESSION['funcionario_cargo']) || !in_array($_SESSION['funcionario_c
                     </a>
                 <?php endif; ?>
 
-                <a href="cardapio.php" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-arrow-left"></i> Voltar ao Cardápio
-                </a>
                 <a href="login_cozinha.php?logout=1" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </a>

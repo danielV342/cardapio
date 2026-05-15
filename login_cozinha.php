@@ -2,6 +2,10 @@
 session_start();
 include "conexao.php";
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 // Se já estiver logado na cozinha, redirecionar
 if (isset($_SESSION['funcionario_id'])) {
     header("Location: cozinha.php");
@@ -10,8 +14,23 @@ if (isset($_SESSION['funcionario_id'])) {
 
 // Logout da cozinha
 if (isset($_GET['logout'])) {
+    // Remove todas as variáveis de sessão
+    $_SESSION = array();
+
+    // Destroi a sessão no servidor
     session_destroy();
-    header("Location: login_cozinha.php");
+
+    // Remove o cookie de sessão (força o navegador a esquecer o PHPSESSID)
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+
+    // Redireciona para a página de login da cozinha
+    header("Location: /cardapio/login_cozinha.php");
     exit();
 }
 
@@ -55,11 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Cozinha - Sushi Wabi-Sabi</title>
+    <link rel="shortcut icon" href="img/logo-sushi.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url('https://images.unsplash.com/photo-1617196034183-421c4917c92d?auto=format&fit=crop&w=1350&q=80');
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             min-height: 100vh;
         }
@@ -125,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container login-container">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-egg-fried display-1"></i>
+                <img src="img/logo-sushi.png" alt="Logo" width="50" height="50">
                 <h3 class="mt-2">Área da Cozinha</h3>
                 <p class="mb-0">Acesso restrito para equipe</p>
             </div>

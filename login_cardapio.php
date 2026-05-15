@@ -2,6 +2,13 @@
 session_start();
 include "conexao.php";
 
+// Processar logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: cardapio.php");
+    exit();
+}
+
 // Se já estiver logado como cliente, redirecionar para o cardápio
 if (isset($_SESSION['usuario_id'])) {
     header("Location: cardapio.php");
@@ -14,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
         $email = $_POST['email'];
         $senha = $_POST['senha'];
 
-        $sql = "SELECT * FROM usuarios WHERE email = ?";
+        $sql = "SELECT * FROM usuarios WHERE email = ? AND ativo = 1";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$email]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
         $endereco = $_POST['endereco'];
         $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO usuarios (nome, email, telefone, endereco, senha) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuarios (nome, email, telefone, endereco, senha, ativo) VALUES (?, ?, ?, ?, ?, 1)";
         $stmt = $pdo->prepare($sql);
 
         try {
@@ -56,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sushi Wabi-Sabi</title>
+    <link rel="shortcut icon" href="img/logo-sushi.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -130,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
     <div class="container login-container">
         <div class="card">
             <div class="card-header">
-                <h3><i class="bi bi-person-circle"></i> Sushi Wabi-Sabi</h3>
+                <h3><img src="img/logo-sushi.png" alt="Logo" width="35" height="35"> Sushi Wabi-Sabi</h3>
                 <p>Faça login ou crie sua conta para fazer pedidos</p>
             </div>
             <div class="card-body p-4">
@@ -196,14 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
                             <button type="submit" class="btn btn-login">Cadastrar</button>
                         </form>
                     </div>
-                </div>
-                
-                <!-- Link para acesso da cozinha -->
-                <div class="acesso-cozinha">
-                    <small>
-                        <i class="bi bi-egg-fried"></i> 
-                        <a href="login_cozinha.php">Acesso para a Cozinha</a>
-                    </small>
                 </div>
             </div>
         </div>
