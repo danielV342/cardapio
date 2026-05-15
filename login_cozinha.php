@@ -2,16 +2,6 @@
 session_start();
 include "conexao.php";
 
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
-// Se já estiver logado na cozinha, redirecionar
-if (isset($_SESSION['funcionario_id'])) {
-    header("Location: cozinha.php");
-    exit();
-}
-
 // Logout da cozinha
 if (isset($_GET['logout'])) {
     // Remove todas as variáveis de sessão
@@ -31,6 +21,12 @@ if (isset($_GET['logout'])) {
 
     // Redireciona para a página de login da cozinha
     header("Location: /cardapio/login_cozinha.php");
+    exit();
+}
+
+// Se já estiver logado na cozinha, redirecionar
+if (isset($_SESSION['funcionario_id'])) {
+    header("Location: cozinha.php");
     exit();
 }
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 15/05/2026 às 12:40
+-- Tempo de geração: 16/05/2026 às 00:44
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -72,7 +72,7 @@ CREATE TABLE `funcionarios` (
 
 INSERT INTO `funcionarios` (`id_funcionario`, `nome`, `email`, `cargo`, `senha`, `ativo`, `data_cadastro`) VALUES
 (4, 'Chef Administrador', 'chef@wabisabi.com', 'chef', '$2y$10$/55LWrcGb/Nkr/.QZC1hbOKzq5cE84/NN9wb2Dnr30ly6G6ZgUzz.', 1, '2026-05-15 10:15:42'),
-(5, 'Cozinheiro', 'matheus@wabisabi.com', 'cozinheiro', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, '2026-05-15 10:15:42');
+(6, 'Matheus Vinicius', 'matheus@wabisabi.com', 'cozinheiro', '$2y$10$yP8BJW7RHx5uWIoyXRHEVO4QoWfH7bV6byH49QuFC2.vPMYsQAlz.', 1, '2026-05-15 13:20:19');
 
 -- --------------------------------------------------------
 
@@ -99,7 +99,8 @@ CREATE TABLE `pedidos` (
 --
 
 INSERT INTO `pedidos` (`id_pedido`, `id_usuario`, `numero_pedido`, `itens`, `subtotal`, `desconto`, `total`, `forma_pagamento`, `status`, `observacoes`, `data_pedido`) VALUES
-(4, 5, 'PED-6A0225D671E08', '[{\"nome\":\"Teppan de salm\\u00e3o, +Cebolinha, +Teriaki, Troca: Camar\\u00e3o\",\"quantidade\":1,\"preco\":115},{\"nome\":\"Mega supremo 700g, +Shoyu, +Teriaki\",\"quantidade\":1,\"preco\":129}]', 244.00, 12.20, 231.80, 'Pix', 'pendente', '', '2026-05-11 18:54:14');
+(4, 5, 'PED-6A0225D671E08', '[{\"nome\":\"Teppan de salm\\u00e3o, +Cebolinha, +Teriaki, Troca: Camar\\u00e3o\",\"quantidade\":1,\"preco\":115},{\"nome\":\"Mega supremo 700g, +Shoyu, +Teriaki\",\"quantidade\":1,\"preco\":129}]', 244.00, 12.20, 231.80, 'Pix', 'concluido', '', '2026-05-11 18:54:14'),
+(5, 5, 'PED-6A070CF0A7947', '[{\"nome\":\"Sunomono\",\"quantidade\":2,\"preco\":32},{\"nome\":\"Shimeji na Manteiga\",\"quantidade\":2,\"preco\":48},{\"nome\":\"Hossomaki de Pepino, +Shoyu\",\"quantidade\":1,\"preco\":23},{\"nome\":\"Sashimi misto\",\"quantidade\":2,\"preco\":96}]', 199.00, 0.00, 199.00, 'Cartão de Crédito', 'concluido', '', '2026-05-15 12:09:20');
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,12 @@ CREATE TABLE `pedido_status_log` (
 --
 
 INSERT INTO `pedido_status_log` (`id_log`, `id_pedido`, `status_anterior`, `status_novo`, `alterado_por`, `data_alteracao`) VALUES
-(6, 4, NULL, 'pendente', 'Nivea', '2026-05-11 18:54:14');
+(6, 4, NULL, 'pendente', 'Nivea', '2026-05-11 18:54:14'),
+(7, 4, 'pendente', 'preparando', 'Chef Administrador', '2026-05-15 10:42:39'),
+(8, 4, 'preparando', 'concluido', 'Chef Administrador', '2026-05-15 10:42:48'),
+(9, 5, NULL, 'pendente', 'Chef Administrador', '2026-05-15 12:09:20'),
+(10, 5, 'pendente', 'preparando', 'Chef Administrador', '2026-05-15 12:09:32'),
+(11, 5, 'preparando', 'concluido', 'Chef Administrador', '2026-05-15 12:09:41');
 
 -- --------------------------------------------------------
 
@@ -279,19 +285,19 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `pedido_status_log`
 --
 ALTER TABLE `pedido_status_log`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `pratos`

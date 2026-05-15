@@ -1391,7 +1391,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (cart.length === 0) {
                 cartContent.innerHTML = `
                     <div class="cart-empty">
-                        i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+                        <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
                         <p class="mt-3">Seu carrinho está vazio!</p>
                         <button class="btn btn-primary" data-bs-dismiss="modal">Continuar Comprando</button>
                     </div >
