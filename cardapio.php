@@ -384,6 +384,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 8px;
             resize: vertical;
         }
+
         #observacaoPedido:focus {
             border-color: #e63946;
             outline: none;
@@ -824,7 +825,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="modal-body" id="customizeContent">
                 </div>
                 <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="removerFoco()">Cancelar</button>
                     <button type="button" class="btn btn-customize-add" id="confirmCustomizeBtn">
                         <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
                     </button>
@@ -845,8 +846,8 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="modal-body" id="cartContent">
                 </div>
                 <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-success" onclick="finalizarPedido()">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="removerFoco()">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="removerFoco(); finalizarPedido()">
                         <i class="bi bi-check-circle"></i> Finalizar Pedido
                     </button>
                 </div>
@@ -866,7 +867,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="modal-body" id="paymentContent">
                 </div>
                 <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="removerFoco()">Voltar</button>
                     <button type="button" class="btn btn-primary" id="confirmPaymentBtn" onclick="confirmarPedido()">
                         Confirmar Pedido
                     </button>
@@ -960,7 +961,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function (e) {
+            link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
@@ -979,6 +980,28 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         let currentCustomizeItem = null;
         let currentPieces = 1;
         let selectedPayment = '';
+        let currentComboConfig = null;
+
+        function removerFoco() {
+            // Remove o foco de qualquer elemento que possa estar focado
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lista de modais que podem causar problemas de foco
+            const modais = ['cartModal', 'paymentModal', 'customizeModal'];
+    
+            modais.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.addEventListener('hide.bs.modal', function() {
+                        removerFoco();
+                    });
+                }
+            });
+        });
 
         // Função para salvar carrinho no localStorage
         function saveCart() {
@@ -1107,69 +1130,197 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
             const customizeContent = document.getElementById('customizeContent');
-            customizeContent.innerHTML = `
-                <div class="text-center mb-4">
-                    <h4>${escapeHtml(prato.nome)}</h4>
-                    <img src="img/${escapeHtml(prato.id_prato)}.jpg" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" alt="${escapeHtml(prato.nome)}">
-                    <p class="text-secondary mt-2">${escapeHtml(prato.descricao)}</p>
-                    <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
-                </div>
-            `;
-            customizeContent.innerHTML += `
-                <div class="pieces-selector">
-                    <button class="minus" onclick="changePieces(-1)">-</button>
-                    <span id="piecesCount">${currentPieces}</span>
-                    <button class="plus" onclick="changePieces(1)">+</button>
-                    <span class="ms-3">peça(s)</span>
-                </div>
-            `;
-            customizeContent.innerHTML += `
-                <h6><i class="bi bi-sliders2"></i> Personalize seu pedido:</h6>
-                <div class="customization-option">
-                    <label><i class="bi bi-plus-circle"></i> Extras:</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraGergelim">
-                        <label class="form-check-label">Gergelim (R$ 1,00)</label>
+            const isCombinado = (prato.id_categoria == 12);
+
+            let html = ``;
+
+            if (isCombinado) {
+                const idPrato = prato.id_prato;
+                let totalPecas = 0;
+                let totalTemakis = 0;
+
+                // Define as quantidades máximas com base no id do combinado
+                switch (idPrato) {
+                    case 49:
+                        totalPecas = 20;
+                        totalTemakis = 0;
+                        break;
+                    case 50:
+                        totalPecas = 30;
+                        totalTemakis = 0;
+                        break;
+                    case 51:
+                        totalPecas = 40;
+                        totalTemakis = 1;
+                        break;
+                    case 52:
+                        totalPecas = 50;
+                        totalTemakis = 2;
+                        break;
+                    default:
+                        totalPecas = 0;
+                }
+
+                // Armazena no objeto global
+                currentComboConfig = {
+                    totalPecas,
+                    totalTemakis,
+                    idPrato
+                };
+
+                // Opções de sabores para as peças
+                const sabores = ['Nigiri de Salmão', 'Nigiri de Atum', 'Joy Salmão', 'Gunkan Salmão', 'Hossomaki de Salmão', 'Hossomaki de Kani', 'Hossomaki de Pepino', 'Uramaki de Salmão', 'Uramaki Camarão', 'Uramaki Kani', 'Philadelphia', 'Skin', 'Sashimi de Salmão', 'Sashimi de Atum', 'Sashimi Misto', 'Hot roll Salmão', 'Hot roll Camarão', 'Hot roll Kani'];
+
+                // Cria os controles de distribuição das peças
+                let pecasHtml = '<div class="customization-option"><label>Distribuição das peças (total: ' + totalPecas + ' peças):</label>';
+                sabores.forEach(sabor => {
+                    // Usar um ID seguro (remover espaços e caracteres especiais)
+                    let idSafe = sabor.replace(/[^a-zA-Z0-9]/g, '_');
+                    pecasHtml += `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">${sabor}</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="alterarQuantidadePecas('${idSafe}', -1, ${totalPecas})">-</button>
+                                <span id="pecas_${idSafe}" class="mx-2" style="min-width: 35px; text-align: center;">0</span>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="alterarQuantidadePecas('${idSafe}', 1, ${totalPecas})">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                pecasHtml += '<div id="avisoPecas" class="text-warning small mt-2"></div></div>';
+
+                // Controles para adicionais (já existentes, mas reutilizamos)
+                const adicionaisHtml = `
+                    <div class="customization-option">
+                        <label><i class="bi bi-plus-circle"></i> Extras:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraGergelim">
+                            <label class="form-check-label">Gergelim (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraMolhoBranco">
+                            <label class="form-check-label">Molho branco (R$ 2,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraCebolinha">
+                            <label class="form-check-label">Cebolinha (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraCreamCheese">
+                            <label class="form-check-label">Cream Cheese (R$ 3,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraShoyu">
+                            <label class="form-check-label">Shoyu (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraTeriaki">
+                            <label class="form-check-label">Teriyaki (R$ 2,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraWassabi">
+                            <label class="form-check-label">Wasabi (R$ 1,00)</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraMolhoBranco">
-                        <label class="form-check-label">Molho branco (R$ 2,00)</label>
+                `;
+
+                // Controles para escolha dos temakis (apenas para combos 51 e 52)
+                let temakisHtml = '';
+                if (totalTemakis > 0) {
+                    const opcoesTemaki = [
+                        'Temaki de salmão',
+                        'Temaki de salmão cream cheese',
+                        'Temaki de camarão',
+                        'Temaki de kani',
+                        'Temaki skin',
+                        'Temaki califórnia'
+                    ];
+                    temakisHtml = '<div class="customization-option"><label><i class="bi bi-egg-fried"></i> Escolha os Temakis (máximo ' + totalTemakis + '):</label>';
+                    for (let i = 1; i <= totalTemakis; i++) {
+                        temakisHtml += `
+                            <div class="mb-2">
+                                <label class="form-label">Temaki ${i}</label>
+                                <select id="temaki_${i}" class="form-select">
+                                    <option value="">Selecione um sabor</option>
+                                    ${opcoesTemaki.map(op => `<option value="${op}">${op}</option>`).join('')}
+                                </select>
+                            </div>
+                        `;
+                    }
+                    temakisHtml += '</div>';
+                }
+
+                // Monta o HTML completo para o combinado
+                html = `
+                    <div class="text-center mb-4">
+                        <h4>${escapeHtml(prato.nome)}</h4>
+                        <img src="img/${escapeHtml(prato.id_prato)}.jpg" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" alt="${escapeHtml(prato.nome)}">
+                        <p class="text-secondary mt-2">${escapeHtml(prato.descricao)}</p>
+                        <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraCebolinha">
-                        <label class="form-check-label">Cebolinha (R$ 1,00)</label>
+                    <h6><i class="bi bi-sliders2"></i> Personalize seu Combinado:</h6>
+                    ${pecasHtml}
+                    ${adicionaisHtml}
+                    ${temakisHtml}
+                    <div class="observation-field">
+                        <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
+                        <textarea id="observationText" rows="3" placeholder="Ex: Sem cebolinha, pouco shoyu..."></textarea>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraCreamCheese">
-                        <label class="form-check-label">Cream Cheese (R$ 3,00)</label>
+                `;
+            } else {
+                // Produtos comuns (categorias 1-9, etc.)
+                html = `
+                    <div class="text-center mb-4">
+                        <h4>${escapeHtml(prato.nome)}</h4>
+                        <img src="img/${escapeHtml(prato.id_prato)}.jpg" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px;" alt="${escapeHtml(prato.nome)}">
+                        <p class="text-secondary mt-2">${escapeHtml(prato.descricao)}</p>
+                        <div class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraShoyu">
-                        <label class="form-check-label">Shoyu (R$ 1,00)</label>
+                    <div class="pieces-selector">
+                        <button class="minus" onclick="changePieces(-1)">-</button>
+                        <span id="piecesCount">${currentPieces}</span>
+                        <button class="plus" onclick="changePieces(1)">+</button>
+                        <span class="ms-3">peça(s)</span>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraTeriaki">
-                        <label class="form-check-label">Teriyaki (R$ 2,00)</label>
+                    <h6><i class="bi bi-sliders2"></i> Personalize seu pedido:</h6>
+                    <div class="customization-option">
+                        <label><i class="bi bi-plus-circle"></i> Extras:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraGergelim">
+                            <label class="form-check-label">Gergelim (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraMolhoBranco">
+                            <label class="form-check-label">Molho branco (R$ 2,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraCebolinha">
+                            <label class="form-check-label">Cebolinha (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraCreamCheese">
+                            <label class="form-check-label">Cream Cheese (R$ 3,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraShoyu">
+                            <label class="form-check-label">Shoyu (R$ 1,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraTeriaki">
+                            <label class="form-check-label">Teriyaki (R$ 2,00)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraWassabi">
+                            <label class="form-check-label">Wasabi (R$ 1,00)</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="extraWassabi">
-                        <label class="form-check-label">Wasabi (R$ 1,00)</label>
+                    <div class="observation-field">
+                        <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
+                        <textarea id="observationText" rows="3" placeholder="Ex: Sem cebolinha, pouco shoyu, bem passado..."></textarea>
                     </div>
-                </div>
-                <div class="customization-option">
-                    <label><i class="bi bi-arrow-left-right"></ i> Substituir proteína:</label>
-                    <select id="substituteProtein" class="form-select">
-                        <option value="">Nenhuma</option>
-                        <option value="atum">Atum (+ R$ 5,00)</option>
-                        <option value="camarao">Camarão (+ R$ 8,00)</option>
-                        <option value="salmao">Salmão (+ R$ 9,00)</option>
-                    </select>
-                </div>
-                <div class="observation-field">
-                    <label><i class="bi bi-chat-text"></i> Observações (opcional):</label>
-                    <textarea id="observationText" rows="3" placeholder="Ex: Sem cebolinha, pouco shoyu, bem passado..."></textarea>
-                </div>
-            `;
+                `;
+            }
+            customizeContent.innerHTML = html;
             new bootstrap.Modal(document.getElementById('customizeModal')).show();
         }
 
@@ -1243,7 +1394,9 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 tipo: 'bebida',
                 categoria: currentCustomizeItem.id_categoria,
                 id_prato: currentCustomizeItem.id_prato,
-                ...(isRefrigerante && { sabor: document.getElementById('bebidaSabor')?.value }),
+                ...(isRefrigerante && {
+                    sabor: document.getElementById('bebidaSabor')?.value
+                }),
                 observation: observation,
                 adicional: adicional
             };
@@ -1270,55 +1423,246 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('piecesCount').innerText = currentPieces;
         }
 
+        // Controla a quantidade de peças de cada sabor
+        function alterarQuantidadePecas(idSafe, delta, totalMaximo) {
+            let span = document.getElementById(`pecas_${idSafe}`);
+            if (!span) return;
+            let valorAtual = parseInt(span.innerText) || 0;
+            let novoValor = valorAtual + delta;
+            if (novoValor < 0) novoValor = 0;
+            // Calcula a soma atual de todos os sabores
+            let somaAtual = 0;
+            document.querySelectorAll('[id^="pecas_"]').forEach(el => {
+                somaAtual += parseInt(el.innerText) || 0;
+            });
+            // Se for incremento, verifica se o total ultrapassa o limite
+            if (delta > 0 && (somaAtual + delta) > totalMaximo) {
+                document.getElementById('avisoPecas').innerText = `Total máximo de peças é ${totalMaximo}. Você já selecionou ${somaAtual} peças.`;
+                return;
+            }
+            document.getElementById('avisoPecas').innerText = '';
+            span.innerText = novoValor;
+        }
+
+        // Recupera a distribuição das peças
+        function getDistribuicaoPecas() {
+            let distribuicao = {};
+            document.querySelectorAll('[id^="pecas_"]').forEach(el => {
+                let saborId = el.id.replace('pecas_', '');
+                let saborOriginal = saborId.replace(/_/g, ' '); // Reconstitui o nome (aproximado)
+                // Ou, melhor: guarde os nomes em um array global, mas por enquanto basta o valor
+                let qtd = parseInt(el.innerText) || 0;
+                if (qtd > 0) {
+                    distribuicao[saborOriginal] = qtd;
+                }
+            });
+            return distribuicao;
+        }
+
+        // Recupera os temakis escolhidos
+        function getTemakisEscolhidos(totalTemakis) {
+            let temakis = [];
+            for (let i = 1; i <= totalTemakis; i++) {
+                let select = document.getElementById(`temaki_${i}`);
+                if (select && select.value) temakis.push(select.value);
+            }
+            return temakis;
+        }
+
         function addCustomizedToCart() {
             const observation = document.getElementById('observationText')?.value || '';
             const precoUnitario = parseFloat(currentCustomizeItem.preco);
-            const extraGergelim = document.getElementById('extraGergelim')?.checked || false;
-            const extraMolhoBranco = document.getElementById('extraMolhoBranco')?.checked || false;
-            const extraCebolinha = document.getElementById('extraCebolinha')?.checked || false;
-            const extraCreamCheese = document.getElementById('extraCreamCheese')?.checked || false;
-            const extraShoyu = document.getElementById('extraShoyu')?.checked || false;
-            const extraTeriaki = document.getElementById('extraTeriaki')?.checked || false;
-            const extraWassabi = document.getElementById('extraWassabi')?.checked || false;
-            const substitute = document.getElementById('substituteProtein')?.value || '';
 
+            // Verifica se é um combinado (categoria 12)
+            const isCombinado = (currentCustomizeItem.id_categoria == 12);
             let adicional = 0;
-            let extrasTexto = '';
-            if (extraGergelim) { adicional += 1.00; extrasTexto += ', +Gergelim'; }
-            if (extraMolhoBranco) { adicional += 2.00; extrasTexto += ', +MolhoBranco'; }
-            if (extraCebolinha) { adicional += 1.00; extrasTexto += ', +Cebolinha'; }
-            if (extraCreamCheese) { adicional += 3.00; extrasTexto += ', +CreamCheese'; }
-            if (extraShoyu) { adicional += 1.00; extrasTexto += ', +Shoyu'; }
-            if (extraTeriaki) { adicional += 2.00; extrasTexto += ', +Teriaki'; }
-            if (extraWassabi) { adicional += 1.00; extrasTexto += ', +Wassabi'; }
-
-            let substituicaoTexto = '';
-            let substituicaoCusto = 0;
-            if (substitute === 'atum') { substituicaoCusto = 5.00; substituicaoTexto = ', Troca: Atum'; }
-            else if (substitute === 'camarao') { substituicaoCusto = 8.00; substituicaoTexto = ', Troca: Camarão'; }
-            else if (substitute === 'salmao') { substituicaoCusto = 9.00; substituicaoTexto = ', Troca: Salmão'; }
-            adicional += substituicaoCusto;
-
-            const precoTotal = (precoUnitario * currentPieces) + adicional;
             let personalizationText = '';
-            if (extrasTexto) personalizationText += extrasTexto;
-            if (substituicaoTexto) personalizationText += substituicaoTexto;
-            if (observation) personalizationText += ` - Obs: ${ observation } `;
 
-            const customItem = {
-                id: currentCustomizeItem.id_prato + '_' + Date.now(),
-                nome: currentCustomizeItem.nome + personalizationText,
-                preco: precoTotal,
-                quantity: 1,
-                originalPreco: precoUnitario,
-                id_prato: currentCustomizeItem.id_prato,
-                pieces: currentPieces,
-                extraGergelim, extraMolhoBranco, extraCebolinha, extraCreamCheese, extraShoyu, extraTeriaki, extraWassabi,
-                substitute, observation, adicional
-            };
-            cart.push(customItem);
-            saveCart();
+            if (isCombinado) {
+                // --- Lógica para COMBINADOS ---
+                const config = currentComboConfig;
+                if (!config) return;
 
+                // 1. Distribuição das peças
+                const distribuicao = getDistribuicaoPecas();
+                let pecasTexto = '';
+                let totalPecas = 0;
+                for (let [sabor, qtd] of Object.entries(distribuicao)) {
+                    if (qtd > 0) {
+                        pecasTexto += `${qtd} ${sabor}, `;
+                        totalPecas += qtd;
+                    }
+                }
+                if (totalPecas !== config.totalPecas) {
+                    alert(`A soma das peças deve ser exatamente ${config.totalPecas}. Você selecionou ${totalPecas}.`);
+                    return;
+                }
+                if (pecasTexto) pecasTexto = pecasTexto.slice(0, -2);
+                personalizationText += ` (${pecasTexto})`;
+
+                // 2. Adicionais (usando os mesmos checkboxes)
+                const extraGergelim = document.getElementById('extraGergelim')?.checked || false;
+                const extraMolhoBranco = document.getElementById('extraMolhoBranco')?.checked || false;
+                const extraCebolinha = document.getElementById('extraCebolinha')?.checked || false;
+                const extraCreamCheese = document.getElementById('extraCreamCheese')?.checked || false;
+                const extraShoyu = document.getElementById('extraShoyu')?.checked || false;
+                const extraTeriaki = document.getElementById('extraTeriaki')?.checked || false;
+                const extraWassabi = document.getElementById('extraWassabi')?.checked || false;
+
+                let extrasTexto = '';
+                if (extraGergelim) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Gergelim';
+                }
+                if (extraMolhoBranco) {
+                    adicional += 2.00;
+                    extrasTexto += ', +MolhoBranco';
+                }
+                if (extraCebolinha) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Cebolinha';
+                }
+                if (extraCreamCheese) {
+                    adicional += 3.00;
+                    extrasTexto += ', +CreamCheese';
+                }
+                if (extraShoyu) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Shoyu';
+                }
+                if (extraTeriaki) {
+                    adicional += 2.00;
+                    extrasTexto += ', +Teriyaki';
+                }
+                if (extraWassabi) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Wasabi';
+                }
+                if (extrasTexto) personalizationText += extrasTexto;
+
+                // 3. Temakis (se houver)
+                if (config.totalTemakis > 0) {
+                    const temakis = getTemakisEscolhidos(config.totalTemakis);
+                    if (temakis.length !== config.totalTemakis) {
+                        alert(`Por favor, selecione os ${config.totalTemakis} temaki(s).`);
+                        return;
+                    }
+                    personalizationText += ` - Temakis: ${temakis.join(', ')}`;
+                }
+
+                if (observation) personalizationText += ` - Obs: ${observation}`;
+                const precoTotal = (precoUnitario * currentPieces) + adicional;
+
+                const customItem = {
+                    id: currentCustomizeItem.id_prato + '_' + Date.now(),
+                    nome: currentCustomizeItem.nome + personalizationText,
+                    preco: precoTotal,
+                    quantity: 1,
+                    originalPreco: precoUnitario,
+                    id_prato: currentCustomizeItem.id_prato,
+                    pieces: currentPieces,
+                    tipo: 'combinado',
+                    distribuicao: distribuicao,
+                    extras: {
+                        extraGergelim,
+                        extraMolhoBranco,
+                        extraCebolinha,
+                        extraCreamCheese,
+                        extraShoyu,
+                        extraTeriaki,
+                        extraWassabi
+                    },
+                    observation: observation,
+                    adicional: adicional
+                };
+                cart.push(customItem);
+                saveCart();
+
+            } else {
+                // --- Lógica original para outros produtos (comidas normais) ---
+                const extraGergelim = document.getElementById('extraGergelim')?.checked || false;
+                const extraMolhoBranco = document.getElementById('extraMolhoBranco')?.checked || false;
+                const extraCebolinha = document.getElementById('extraCebolinha')?.checked || false;
+                const extraCreamCheese = document.getElementById('extraCreamCheese')?.checked || false;
+                const extraShoyu = document.getElementById('extraShoyu')?.checked || false;
+                const extraTeriaki = document.getElementById('extraTeriaki')?.checked || false;
+                const extraWassabi = document.getElementById('extraWassabi')?.checked || false;
+                const substitute = document.getElementById('substituteProtein')?.value || '';
+
+                let extrasTexto = '';
+                if (extraGergelim) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Gergelim';
+                }
+                if (extraMolhoBranco) {
+                    adicional += 2.00;
+                    extrasTexto += ', +MolhoBranco';
+                }
+                if (extraCebolinha) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Cebolinha';
+                }
+                if (extraCreamCheese) {
+                    adicional += 3.00;
+                    extrasTexto += ', +CreamCheese';
+                }
+                if (extraShoyu) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Shoyu';
+                }
+                if (extraTeriaki) {
+                    adicional += 2.00;
+                    extrasTexto += ', +Teriaki';
+                }
+                if (extraWassabi) {
+                    adicional += 1.00;
+                    extrasTexto += ', +Wassabi';
+                }
+
+                let substituicaoTexto = '';
+                let substituicaoCusto = 0;
+                if (substitute === 'atum') {
+                    substituicaoCusto = 5.00;
+                    substituicaoTexto = ', Troca: Atum';
+                } else if (substitute === 'camarao') {
+                    substituicaoCusto = 8.00;
+                    substituicaoTexto = ', Troca: Camarão';
+                } else if (substitute === 'salmao') {
+                    substituicaoCusto = 9.00;
+                    substituicaoTexto = ', Troca: Salmão';
+                }
+                adicional += substituicaoCusto;
+
+                const precoTotal = (precoUnitario * currentPieces) + adicional;
+                let personalizationText = '';
+                if (extrasTexto) personalizationText += extrasTexto;
+                if (substituicaoTexto) personalizationText += substituicaoTexto;
+                if (observation) personalizationText += ` - Obs: ${observation}`;
+
+                const customItem = {
+                    id: currentCustomizeItem.id_prato + '_' + Date.now(),
+                    nome: currentCustomizeItem.nome + personalizationText,
+                    preco: precoTotal,
+                    quantity: 1,
+                    originalPreco: precoUnitario,
+                    id_prato: currentCustomizeItem.id_prato,
+                    pieces: currentPieces,
+                    extraGergelim,
+                    extraMolhoBranco,
+                    extraCebolinha,
+                    extraCreamCheese,
+                    extraShoyu,
+                    extraTeriaki,
+                    extraWassabi,
+                    substitute,
+                    observation,
+                    adicional
+                };
+                cart.push(customItem);
+                saveCart();
+            }
+
+            // Feedback visual e fechamento do modal
             const btn = document.getElementById('confirmCustomizeBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="bi bi-check-lg"></i> Adicionado!';
@@ -1337,7 +1681,13 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                cart.push({ id: prato.id, nome: prato.nome, preco: prato.preco, quantity: 1, id_prato: prato.id_prato });
+                cart.push({
+                    id: prato.id,
+                    nome: prato.nome,
+                    preco: prato.preco,
+                    quantity: 1,
+                    id_prato: prato.id_prato
+                });
             }
             saveCart();
 
@@ -1362,15 +1712,19 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         function updateQuantity(itemId, change) {
-            const item = cart.find(item => item.id === itemId);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    removeFromCart(itemId);
-                } else {
-                    saveCart();
-                    displayCart();
+            try {
+                const item = cart.find(item => item.id === itemId);
+                if (item) {
+                    item.quantity += change;
+                    if (item.quantity <= 0) {
+                        removeFromCart(itemId);
+                    } else {
+                        saveCart();
+                        displayCart();
+                    }
                 }
+            } catch (erro) {
+                console.error('Erro no updateQuantity:', erro);
             }
         }
 
@@ -1387,61 +1741,66 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         function displayCart() {
-            const cartContent = document.getElementById('cartContent');
-            if (cart.length === 0) {
-                cartContent.innerHTML = `
-                    <div class="cart-empty">
-                        <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
-                        <p class="mt-3">Seu carrinho está vazio!</p>
-                        <button class="btn btn-primary" data-bs-dismiss="modal">Continuar Comprando</button>
-                    </div >
-                `;
-                return;
-            }
-            let html = '<div class="cart-items">';
-            cart.forEach(item => {
-                const imgId = item.id_prato ? item.id_prato : 'placeholder';
-                const imgPath = `img/${imgId}.jpg`;
-                html += `
-                    <div class="cart-item d-flex align-items-center">
-                        <img src="${imgPath}" alt="${item.nome}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">${item.nome}</h6>
-                                    <small class="text-secondary">R$ ${item.preco.toFixed(2)}</small>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity('${item.id}', -1)">
-                                        <i class="bi bi-dash"></i>
-                                    </button>
-                                    <span class="mx-2">${item.quantity}</span>
-                                    <button class="btn btn-sm btn-outline-success" onclick="updateQuantity('${item.id}', 1)">
-                                        <i class="bi bi-plus"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${item.id}')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+            try {
+                const cartContent = document.getElementById('cartContent');
+                if (cart.length === 0) {
+                    cartContent.innerHTML = `
+                        <div class="cart-empty">
+                            <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Seu carrinho está vazio!</p>
+                            <button class="btn btn-primary" data-bs-dismiss="modal" onclick="removerFoco()">Continuar Comprando</button>
+                        </div >
+                    `;
+                    return;
+                }
+                let html = '<div class="cart-items">';
+                cart.forEach(item => {
+                    const imgId = item.id_prato ? item.id_prato : 'placeholder';
+                    const imgPath = `img/${imgId}.jpg`;
+                    html += `
+                        <div class="cart-item d-flex align-items-center">
+                            <img src="${imgPath}" alt="${item.nome}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">${item.nome}</h6>
+                                        <small class="text-secondary">R$ ${item.preco.toFixed(2)}</small>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="updateQuantity('${item.id}', -1)">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <span class="mx-2">${item.quantity}</span>
+                                        <button class="btn btn-sm btn-outline-success" onclick="updateQuantity('${item.id}', 1)">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger ms-2" onclick="removeFromCart('${item.id}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    `;
+                });
+                html += `
+                    <div class="cart-total">
+                        <div class="d-flex justify-content-between">
+                            <strong>Total:</strong>
+                            <strong>R$ ${calculateTotal().toFixed(2)}</strong>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-clear-cart" onclick="clearCart()">
+                            <i class="bi bi-trash3"></i> Limpar Carrinho
+                        </button>
                     </div>
                 `;
-            });
-            html += `
-                <div class="cart-total">
-                    <div class="d-flex justify-content-between">
-                        <strong>Total:</strong>
-                        <strong>R$ ${calculateTotal().toFixed(2)}</strong>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <button class="btn btn-clear-cart" onclick="clearCart()">
-                        <i class="bi bi-trash3"></i> Limpar Carrinho
-                    </button>
-                </div>
-            `;
-            cartContent.innerHTML = html;
+                cartContent.innerHTML = html;
+            } catch (erro) {
+                console.error('Erro no displayCart:', erro);
+                alert('Ocorreu um erro ao exibir o carrinho. Recarregue a página.');
+            }
         }
 
         function finalizarPedido() {
@@ -1458,19 +1817,19 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h5 class="text-danger">Total: R$ ${total.toFixed(2)}</h5>
                 </div >
                 <h6 class="mb-3">Selecione a forma de pagamento:</h6>
-                <div class="payment-method" onclick="selectPayment('Dinheiro')">
+                <div class="payment-method" onclick="selectPayment('Dinheiro', event)">
                     <i class="bi bi-cash-stack"></i> Dinheiro
                     <small class="text-secondary d-block">(10% de desconto)</small>
                 </div>
-                <div class="payment-method" onclick="selectPayment('Pix')">
+                <div class="payment-method" onclick="selectPayment('Pix', event)">
                     <i class="bi bi-qr-code"></i> Pix
                     <small class="text-secondary d-block">(5% de desconto)</small>
                 </div>
-                <div class="payment-method" onclick="selectPayment('Cartão de Crédito')">
+                <div class="payment-method" onclick="selectPayment('Cartão de Crédito', event)">
                     <i class="bi bi-credit-card"></i> Cartão de Crédito
                     <small class="text-secondary d-block">(Até 3x sem juros)</small>
                 </div>
-                <div class="payment-method" onclick="selectPayment('Cartão de Débito')">
+                <div class="payment-method" onclick="selectPayment('Cartão de Débito', event)">
                     <i class="bi bi-bank2"></i> Cartão de Débito
                 </div>
                 <input type="hidden" id="selectedPayment" value="">
@@ -1479,11 +1838,11 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             new bootstrap.Modal(document.getElementById('paymentModal')).show();
         }
 
-        function selectPayment(payment) {
+        function selectPayment(payment, ev) {
             selectedPayment = payment;
             document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            if (event && event.target) {
-                event.target.closest('.payment-method').classList.add('selected');
+            if (ev && ev.target) {
+                ev.target.closest('.payment-method').classList.add('selected');
             }
             document.getElementById('selectedPayment').value = payment;
         }
@@ -1594,10 +1953,12 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Enviar pedido para a API
             fetch('api_pedidos.php?action=salvar_pedido', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pedidoData)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pedidoData)
+                })
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
@@ -1638,7 +1999,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // Eventos
-        document.querySelector('.nav-icons .position-relative').addEventListener('click', function (e) {
+        document.querySelector('.nav-icons .position-relative').addEventListener('click', function(e) {
             e.preventDefault();
             displayCart();
             new bootstrap.Modal(document.getElementById('cartModal')).show();
@@ -1646,7 +2007,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         const confirmBtn = document.getElementById('confirmCustomizeBtn');
         if (confirmBtn) {
-            confirmBtn.addEventListener('click', function () {
+            confirmBtn.addEventListener('click', function() {
                 const isBebida = (currentCustomizeItem && (currentCustomizeItem.id_categoria == 10 || currentCustomizeItem.id_categoria == 11));
                 if (isBebida) {
                     addCustomizedBebidaToCart();
@@ -1658,14 +2019,14 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         const pedidosModal = document.getElementById('pedidosModal');
         if (pedidosModal) {
-            pedidosModal.addEventListener('show.bs.modal', function () {
+            pedidosModal.addEventListener('show.bs.modal', function() {
                 carregarHistoricoPedidos();
             });
         }
 
         updateCartCount();
 
-        String.prototype.hashCode = function () {
+        String.prototype.hashCode = function() {
             let hash = 0;
             for (let i = 0; i < this.length; i++) {
                 hash = ((hash << 5) - hash) + this.charCodeAt(i);
