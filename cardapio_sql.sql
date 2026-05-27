@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 16/05/2026 às 00:44
+-- Tempo de geração: 27/05/2026 às 05:53
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -100,7 +100,10 @@ CREATE TABLE `pedidos` (
 
 INSERT INTO `pedidos` (`id_pedido`, `id_usuario`, `numero_pedido`, `itens`, `subtotal`, `desconto`, `total`, `forma_pagamento`, `status`, `observacoes`, `data_pedido`) VALUES
 (4, 5, 'PED-6A0225D671E08', '[{\"nome\":\"Teppan de salm\\u00e3o, +Cebolinha, +Teriaki, Troca: Camar\\u00e3o\",\"quantidade\":1,\"preco\":115},{\"nome\":\"Mega supremo 700g, +Shoyu, +Teriaki\",\"quantidade\":1,\"preco\":129}]', 244.00, 12.20, 231.80, 'Pix', 'concluido', '', '2026-05-11 18:54:14'),
-(5, 5, 'PED-6A070CF0A7947', '[{\"nome\":\"Sunomono\",\"quantidade\":2,\"preco\":32},{\"nome\":\"Shimeji na Manteiga\",\"quantidade\":2,\"preco\":48},{\"nome\":\"Hossomaki de Pepino, +Shoyu\",\"quantidade\":1,\"preco\":23},{\"nome\":\"Sashimi misto\",\"quantidade\":2,\"preco\":96}]', 199.00, 0.00, 199.00, 'Cartão de Crédito', 'concluido', '', '2026-05-15 12:09:20');
+(5, 5, 'PED-6A070CF0A7947', '[{\"nome\":\"Sunomono\",\"quantidade\":2,\"preco\":32},{\"nome\":\"Shimeji na Manteiga\",\"quantidade\":2,\"preco\":48},{\"nome\":\"Hossomaki de Pepino, +Shoyu\",\"quantidade\":1,\"preco\":23},{\"nome\":\"Sashimi misto\",\"quantidade\":2,\"preco\":96}]', 199.00, 0.00, 199.00, 'Cartão de Crédito', 'concluido', '', '2026-05-15 12:09:20'),
+(6, 5, 'PED-6A15CE1F62C92', '[{\"nome\":\"Sunomono\",\"quantidade\":1,\"preco\":16},{\"nome\":\"Nigiri de Atum\",\"quantidade\":1,\"preco\":36},{\"nome\":\"Mega supremo 1,5kg\",\"quantidade\":1,\"preco\":178}]', 230.00, 11.50, 218.50, 'Pix', 'pendente', '', '2026-05-26 16:45:19'),
+(7, 5, 'PED-6A1656F963724', '[{\"nome\":\"Monte o seu - 30 pe\\u00e7as (15 Nigiri de Salm o, 5 Nigiri de Atum, 5 Joy Salm o, 5 Skin)\",\"quantidade\":1,\"preco\":54},{\"nome\":\"Yuzu Spritz drink, +Gelo\",\"quantidade\":1,\"preco\":28.5}]', 82.50, 8.25, 74.25, 'Dinheiro', 'pendente', '', '2026-05-27 02:29:13'),
+(8, 5, 'PED-6A1662A801C06', '[{\"nome\":\"Edamame\",\"quantidade\":1,\"preco\":28}]', 28.00, 2.80, 25.20, 'Dinheiro', 'pendente', '', '2026-05-27 03:19:04');
 
 -- --------------------------------------------------------
 
@@ -127,7 +130,10 @@ INSERT INTO `pedido_status_log` (`id_log`, `id_pedido`, `status_anterior`, `stat
 (8, 4, 'preparando', 'concluido', 'Chef Administrador', '2026-05-15 10:42:48'),
 (9, 5, NULL, 'pendente', 'Chef Administrador', '2026-05-15 12:09:20'),
 (10, 5, 'pendente', 'preparando', 'Chef Administrador', '2026-05-15 12:09:32'),
-(11, 5, 'preparando', 'concluido', 'Chef Administrador', '2026-05-15 12:09:41');
+(11, 5, 'preparando', 'concluido', 'Chef Administrador', '2026-05-15 12:09:41'),
+(12, 6, NULL, 'pendente', 'Chef Administrador', '2026-05-26 16:45:19'),
+(13, 7, NULL, 'pendente', 'Chef Administrador', '2026-05-27 02:29:13'),
+(14, 8, NULL, 'pendente', 'Chef Administrador', '2026-05-27 03:19:04');
 
 -- --------------------------------------------------------
 
@@ -197,10 +203,10 @@ INSERT INTO `pratos` (`id_prato`, `nome`, `descricao`, `id_categoria`, `quantida
 (46, 'Vinho Rosé', 'Vinho reservado Sweet Rosé suave', 11, '750ml', 36),
 (47, 'Sake Bomb Drink', 'Saquê, limão, xarope de gengibre e gelo', 11, '250ml', 26),
 (48, 'Yuzu Spritz drink', 'Licor yuzu, espumante e fatia de limão', 11, '250ml', 28),
-(49, 'Monte os seu - 20 peças', '5 uramaki + 5 hossomaki + 5 nigiris + 5 hot rolls', 12, '20 peças', 43),
-(50, 'Monte o seu - 30 peças', '10 uramaki + 10 hot rolls + 5 nigiris + 5 hossomaki', 12, '30 peças', 54),
-(51, 'Monte o seu - 40 peças + 1 Temaki', '10 Uramaki + 10 Hot Roll + 10 Hossomaki + 5 Joy + 5 Gunkan + 1 Temaki', 12, '40 peças', 75),
-(52, 'Monte o seu - 50 peças + 2 Temakis', '10 Uramaki + 10 Hot Roll + 10 Hossomaki + 10 Philadelphia + 5 Joy + 5 Nigiri + 2 Temakis', 12, '50 peças', 115);
+(49, 'Monte os seu - 20 peças', 'Escolha suas peças', 12, '20 peças', 43),
+(50, 'Monte o seu - 30 peças', 'Escolha suas peças', 12, '30 peças', 54),
+(51, 'Monte o seu - 40 peças + 1 Temaki', 'Escolha suas peças', 12, '40 peças', 75),
+(52, 'Monte o seu - 50 peças + 2 Temakis', 'Escolha suas peças', 12, '50 peças', 115);
 
 -- --------------------------------------------------------
 
@@ -291,13 +297,13 @@ ALTER TABLE `funcionarios`
 -- AUTO_INCREMENT de tabela `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `pedido_status_log`
 --
 ALTER TABLE `pedido_status_log`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `pratos`
